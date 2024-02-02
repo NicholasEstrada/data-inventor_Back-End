@@ -1,5 +1,6 @@
 package com.nicholastcc.datainventor.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Builder
-public class SensitiveDataModel {
+public class SensetiveDataModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +28,8 @@ public class SensitiveDataModel {
     private String pathLocation;
 
     @ManyToOne
-    @JoinColumn(name = "dominio_id")
+    @JoinColumn(name = "dominio")
     private DominioModel dominio;
+
+
 }

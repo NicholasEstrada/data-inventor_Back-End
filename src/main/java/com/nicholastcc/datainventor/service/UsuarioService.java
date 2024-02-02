@@ -1,6 +1,6 @@
 package com.nicholastcc.datainventor.service;
 
-import com.nicholastcc.datainventor.model.UsuarioModel;
+import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import com.nicholastcc.datainventor.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -28,9 +28,8 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UsuarioModel usuario = usuarioRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Login inexistente"));
+        UsuarioModel usuario = (UsuarioModel) usuarioRepository
+                .findByUsername(username);
 
         return User
                 .builder()

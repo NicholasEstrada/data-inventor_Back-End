@@ -1,7 +1,7 @@
 package com.nicholastcc.datainventor.service;
 
 import com.nicholastcc.datainventor.model.DominioModel;
-import com.nicholastcc.datainventor.model.SensitiveDataModel;
+import com.nicholastcc.datainventor.model.SensetiveDataModel;
 import com.nicholastcc.datainventor.repository.DominioRepository;
 import com.nicholastcc.datainventor.repository.SensetiveDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class InventorService {
         Long dominioID = dominioIdExist.getId() != null ? dominioIdExist.getId() : dominio.get().getId() ;
 
         for (String dado : dataSensetive ){
-            SensitiveDataModel sensitiveDataModel = new SensitiveDataModel();
+            SensetiveDataModel sensitiveDataModel = new SensetiveDataModel();
 
             DominioModel domainReference = new DominioModel();
             domainReference.setId(dominioID);

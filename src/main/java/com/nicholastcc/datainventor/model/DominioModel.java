@@ -1,5 +1,6 @@
 package com.nicholastcc.datainventor.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +22,9 @@ public class DominioModel {
     @Column(name = "dominio", unique = true)
     private String dominio;
 
-    @OneToMany(mappedBy = "dominio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SensitiveDataModel> dadosList = new ArrayList<>();
+    @OneToMany(mappedBy = "dominio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<SensetiveDataModel> dadosList = new ArrayList<>();
+
 
 }

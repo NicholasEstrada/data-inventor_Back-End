@@ -1,9 +1,10 @@
 package com.nicholastcc.datainventor.repository;
 
-import com.nicholastcc.datainventor.model.SensitiveDataModel;
+import com.nicholastcc.datainventor.model.SensetiveDataModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.util.List;
 
-public interface SensetiveDataRepository extends JpaRepository<SensitiveDataModel, Long> {
+public interface SensetiveDataRepository extends JpaRepository<SensetiveDataModel, Long> {
+    List<SensetiveDataModel> findByDominioId(Long dominioId);
 }
