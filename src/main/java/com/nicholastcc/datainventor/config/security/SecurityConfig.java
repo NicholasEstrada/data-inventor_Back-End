@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/inventor").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class )
                 .build();
     }
 
@@ -42,7 +43,7 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
+    //@Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
