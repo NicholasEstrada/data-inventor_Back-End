@@ -18,13 +18,13 @@ public class SensetiveDataModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "tipo")
+    @Column(name = "tipo") // pdf, jpeg jpg ...
     private String tipo;
 
-    @Column(name = "sensitive")
+    @Column(name = "sensitive") // o dado em si
     private String sensitive;
 
-    @Column(name = "pathlocation")
+    @Column(name = "pathlocation") // url completa do arquivo
     private String pathLocation;
 
     @ManyToOne
