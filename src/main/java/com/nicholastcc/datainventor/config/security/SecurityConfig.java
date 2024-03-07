@@ -51,39 +51,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return NoOpPasswordEncoder.getInstance();
-//    }
-//
-//    @Bean
-//    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-//        return new JwtAuthenticationFilter();
-//    }
-//
-//    @Bean
-//    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-//        return new SessionFixationProtectionStrategy();
-//    }
-//
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf().disable()
-//                .cors()
-//                .and()
-//                .sessionManagement().sessionAuthenticationStrategy(sessionAuthenticationStrategy())
-//                .and()
-//                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .authorizeRequests(authorizeRequests ->
-//                        authorizeRequests
-//                                .antMatchers("/api/usuarios").permitAll()
-//                                .anyRequest().authenticated()
-//                );
-//
-//        return http.build();
-//
-//    }
 }

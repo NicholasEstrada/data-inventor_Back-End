@@ -1,5 +1,8 @@
 package com.nicholastcc.datainventor.model.Usuarios;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.nicholastcc.datainventor.model.DominioModel;
+import com.nicholastcc.datainventor.model.SensetiveDataModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,7 +31,7 @@ public class UsuarioModel implements UserDetails {
     @Column(name = "nome")
     private String nome;
 
-    @Column(name = "username", unique = true)
+    @Column(name = "username" /*, unique = true*/)
     private String username;
 
     @Column(name = "password")
@@ -35,6 +40,19 @@ public class UsuarioModel implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private UsuarioRole role;
+
+    @Column(name = "data_cadastro", updatable = false)
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate dataCadastro;
+
+    @PrePersist
+    public void prePersist(){
+        setDataCadastro(LocalDate.now());
+    }
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SensetiveDataModel> sensetiveDataList = new ArrayList<>();
+
 
     public UsuarioModel(String nome, String username, String password, UsuarioRole role) {
         this.nome = nome;

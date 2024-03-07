@@ -2,9 +2,13 @@ package com.nicholastcc.datainventor.service;
 
 import com.nicholastcc.datainventor.model.DominioModel;
 import com.nicholastcc.datainventor.model.SensetiveDataModel;
+import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import com.nicholastcc.datainventor.repository.DominioRepository;
 import com.nicholastcc.datainventor.repository.SensetiveDataRepository;
+import com.nicholastcc.datainventor.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,7 +24,12 @@ public class InventorService {
     @Autowired
     private SensetiveDataRepository sensetiveDataRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     public void inventor(String domain){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
 
         List<String> dataSensetive = InvetorDataSensetive(domain);
 
@@ -33,21 +42,36 @@ public class InventorService {
                     return dominioRepository.save(newdomain);
                 });
 
-        Optional<DominioModel> dominio = dominioRepository.findByDominio(domain);
-
         // Pega o id de referencia para referenciar o dado
-        Long dominioID = dominioIdExist.getId() != null ? dominioIdExist.getId() : dominio.get().getId() ;
+        DominioModel domainReference = dominioRepository.getById(dominioIdExist.getId());
+
+        UsuarioModel usuarioModel = usuarioRepository.findByUsername(username);
+        Optional<UsuarioModel> usuario = usuarioRepository.findById(usuarioModel.getId());
+
 
         for (String dado : dataSensetive ){
-            SensetiveDataModel sensitiveDataModel = new SensetiveDataModel();
 
-            DominioModel domainReference = new DominioModel();
-            domainReference.setId(dominioID);
+            if (usuario != null) {
+                SensetiveDataModel sensitiveDataModel = new SensetiveDataModel();
 
-            sensitiveDataModel.setDominio(domainReference);
-            sensitiveDataModel.setSensitive(dado);
+                // atualizar logica ao inserir modelo real de InvetorDataSensetive()
+                sensitiveDataModel.setPathLocation("https://tester.com/arquivo.pdf");
 
-            sensetiveDataRepository.save(sensitiveDataModel);
+                // atualizar logica ao inserir modelo real de InvetorDataSensetive()
+                sensitiveDataModel.setTipo("PDF");
+
+                // seta o dominio de referência
+                sensitiveDataModel.setDominio(domainReference);
+
+                // seta o dado
+                sensitiveDataModel.setSensitive(dado);
+
+                // aplica o usuario de referencia
+                sensitiveDataModel.setUsuario(usuario.get()); // ## issue consertar referencia de FK
+
+                sensetiveDataRepository.save(sensitiveDataModel);
+            }
+
         }
     }
 
@@ -61,5 +85,4 @@ public class InventorService {
 
         return dadosColetados;
     }
-
 }

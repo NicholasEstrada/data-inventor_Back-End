@@ -2,12 +2,16 @@ package com.nicholastcc.datainventor.controller;
 
 import com.nicholastcc.datainventor.model.DominioModel;
 import com.nicholastcc.datainventor.model.SensetiveDataModel;
+import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import com.nicholastcc.datainventor.repository.DominioRepository;
 import com.nicholastcc.datainventor.repository.SensetiveDataRepository;
+import com.nicholastcc.datainventor.repository.UsuarioRepository;
 import com.nicholastcc.datainventor.service.InventorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +31,9 @@ public class DominioController {
 
     @Autowired
     private DominioRepository dominioRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @PostMapping("/buscaPorDominio")
     public ResponseEntity<String> buscaPorDominio(@RequestBody Map<String, String> requestBody){
@@ -48,6 +55,10 @@ public class DominioController {
 
     @GetMapping("/dominios")
     public ResponseEntity<List<DominioModel>> todosDominios(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        UsuarioModel usuario = usuarioRepository.findByUsername(username);
         try {
             List<DominioModel> dominioModels = dominioRepository.findAll();
             return dominioModels != null ? ResponseEntity.ok(dominioModels) : ResponseEntity.notFound().build();

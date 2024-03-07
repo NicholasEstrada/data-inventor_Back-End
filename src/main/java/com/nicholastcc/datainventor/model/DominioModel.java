@@ -1,6 +1,7 @@
 package com.nicholastcc.datainventor.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,4 @@ public class DominioModel {
     @OneToMany(mappedBy = "dominio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<SensetiveDataModel> dadosList = new ArrayList<>();
-
-
 }
