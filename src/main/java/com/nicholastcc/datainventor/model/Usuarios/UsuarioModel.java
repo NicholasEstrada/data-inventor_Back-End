@@ -1,6 +1,7 @@
 package com.nicholastcc.datainventor.model.Usuarios;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.nicholastcc.datainventor.model.DominioModel;
 import com.nicholastcc.datainventor.model.SensetiveDataModel;
 import jakarta.persistence.*;
@@ -51,6 +52,7 @@ public class UsuarioModel implements UserDetails {
     }
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<SensetiveDataModel> sensetiveDataList = new ArrayList<>();
 
 

@@ -10,4 +10,8 @@ import java.util.List;
 public interface SensetiveDataRepository extends JpaRepository<SensetiveDataModel, Long> {
     List<SensetiveDataModel> findByDominioId(Long dominioId);
 
+    List<SensetiveDataModel> findByUsuarioId(Long usuarioId);
+
+    List<SensetiveDataModel> findByDominioIdAndUsuario(Long dominioId, UsuarioModel usuario);
+
 }

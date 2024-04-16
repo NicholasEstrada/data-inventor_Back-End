@@ -1,5 +1,6 @@
 package com.nicholastcc.datainventor.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import jakarta.persistence.*;
@@ -22,7 +23,7 @@ public class SensetiveDataModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "tipo") // pdf, jpeg jpg ...
+    @Column(name = "tipo") // CPF, Email, opinião politica, identidade de genero...
     private String tipo;
 
     @Column(name = "sensitive" /*, unique = true*/ ) // o dado em si, cpf, e-mail
@@ -37,6 +38,7 @@ public class SensetiveDataModel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
+    @JsonBackReference
     private UsuarioModel usuario;
 
     @Column(name = "data_criacao")
