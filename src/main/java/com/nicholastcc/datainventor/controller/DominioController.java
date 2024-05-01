@@ -40,7 +40,7 @@ public class DominioController {
         String domain = requestBody.get("dominio");
 
         inventorService.inventor(domain);
-        return ResponseEntity.ok("Processado o valor de " + domain);
+        return ResponseEntity.ok("");
     }
 
 

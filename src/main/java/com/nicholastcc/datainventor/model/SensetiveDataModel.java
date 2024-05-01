@@ -1,7 +1,6 @@
 package com.nicholastcc.datainventor.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,8 +28,9 @@ public class SensetiveDataModel {
     @Column(name = "sensitive" /*, unique = true*/ ) // o dado em si, cpf, e-mail
     private String sensitive;
 
-    @Column(name = "pathlocation") // url completa do arquivo
-    private String pathLocation;
+    @ManyToOne
+    @JoinColumn(name = "path_location_id")
+    private PathLocationModel pathLocation;
 
     @ManyToOne
     @JoinColumn(name = "dominio")
