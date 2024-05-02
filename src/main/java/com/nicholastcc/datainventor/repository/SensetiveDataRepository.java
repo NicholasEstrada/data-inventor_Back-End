@@ -1,5 +1,6 @@
 package com.nicholastcc.datainventor.repository;
 
+import com.nicholastcc.datainventor.model.PathLocationModel;
 import com.nicholastcc.datainventor.model.SensetiveDataModel;
 import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,5 @@ public interface SensetiveDataRepository extends JpaRepository<SensetiveDataMode
 
     List<SensetiveDataModel> findByDominioIdAndUsuario(Long dominioId, UsuarioModel usuario);
 
+    List<SensetiveDataModel> findByPathLocation(PathLocationModel pathLocation);
 }

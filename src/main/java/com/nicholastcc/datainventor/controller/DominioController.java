@@ -1,9 +1,11 @@
 package com.nicholastcc.datainventor.controller;
 
 import com.nicholastcc.datainventor.model.DominioModel;
+import com.nicholastcc.datainventor.model.PathLocationModel;
 import com.nicholastcc.datainventor.model.SensetiveDataModel;
 import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import com.nicholastcc.datainventor.repository.DominioRepository;
+import com.nicholastcc.datainventor.repository.PathLocationRepository;
 import com.nicholastcc.datainventor.repository.SensetiveDataRepository;
 import com.nicholastcc.datainventor.repository.UsuarioRepository;
 import com.nicholastcc.datainventor.service.InventorService;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/inventor")
@@ -34,6 +37,9 @@ public class DominioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PathLocationRepository pathLocationRepository;
 
     @PostMapping("/buscaPorDominio")
     public ResponseEntity<String> buscaPorDominio(@RequestBody Map<String, String> requestBody){
@@ -73,6 +79,13 @@ public class DominioController {
         // Buscar os SensetiveDataModel relacionados ao domínio e ao usuário
         List<SensetiveDataModel> sensetiveDataModels = sensetiveDataRepository.findByDominioIdAndUsuario(dominioId, usuario);
 
+        return ResponseEntity.ok(sensetiveDataModels);
+    }
+
+    @GetMapping("/dadosSensiveisPorPathLocation")
+    public ResponseEntity<List<SensetiveDataModel>> dadosSensiveisPorPathLocation(@RequestParam Long pathLocationId) {
+        Optional<PathLocationModel> pathIdExist = pathLocationRepository.findById(pathLocationId);
+        List<SensetiveDataModel> sensetiveDataModels = sensetiveDataRepository.findByPathLocation(pathIdExist.get());
         return ResponseEntity.ok(sensetiveDataModels);
     }
 }
