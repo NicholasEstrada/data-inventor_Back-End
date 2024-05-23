@@ -1,5 +1,6 @@
 package com.nicholastcc.datainventor.service;
 
+import com.nicholastcc.datainventor.OCRMaven.webVersion.InputDomain;
 import com.nicholastcc.datainventor.model.DominioModel;
 import com.nicholastcc.datainventor.model.PathLocationModel;
 import com.nicholastcc.datainventor.model.SensetiveDataModel;
@@ -15,9 +16,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class InventorService {
@@ -33,6 +37,9 @@ public class InventorService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    private static final ExecutorService threadPool = Executors.newFixedThreadPool(10); // Limite de 10 threads
+
 
     public void inventor(String domain){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -100,12 +107,27 @@ public class InventorService {
 
     private List<String> InvetorDataSensetive(String domain) {
 
-        List<String> dadosColetados = new ArrayList<>();
+        List<String> listadepdf = new ArrayList<>();
 
-        dadosColetados.add("https://teste.com/links0/arquivo.pdf|CPF:119.920.479-76,CPF:123.456.789-12,EMAIL:tewste@test.com,EMAIL:tewste@test.com");
-        dadosColetados.add("https://teste.com/links02/arquivo2.pdf|CPF:219.920.479-76,CPF:223.456.789-12,EMAIL:tewste@test.com,EMAIL:tewste@test.com");
+        try {
+            InputDomain inputDomain = new InputDomain(domain);
+
+            listadepdf = inputDomain.InvetorDataSensetive(domain, 0);
+            threadPool.shutdown();
+
+            System.out.println("Total de arquivos encontrados: " + listadepdf.size());
+            for (String content : listadepdf) {
+                System.out.println("Arquivo encontrado: " + content);
+            }
+        } catch (UnsupportedEncodingException | InterruptedException e) {
+            System.out.println("Erro no processamento: " + e.getMessage());
+        }
+
+        // dadosColetados.add("https://teste.com/links0/arquivo.pdf|CPF:119.920.479-76,CPF:123.456.789-12,EMAIL:tewste@test.com,EMAIL:tewste@test.com");
+        // dadosColetados.add("https://teste.com/links02/arquivo2.pdf|CPF:219.920.479-76,CPF:223.456.789-12,EMAIL:tewste@test.com,EMAIL:tewste@test.com");
+        // dadosColetados.add("C:\\Users\\Nicholas\\Desktop\\Dados Para Análise\\Camera Roll\\Caps.png|e-mail:ninicoco@ggg.co,e-mail:aspammer@website.com,e-mail:edududu@edu.if,CPF:119.920.749-76,CPF:297.251.780-68,CPF:119.920.749-76,|png|OCR");
 
 
-        return dadosColetados;
+        return listadepdf;
     }
 }

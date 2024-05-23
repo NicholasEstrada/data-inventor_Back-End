@@ -25,6 +25,12 @@ public class PathLocationModel {
     @Column(name = "path_location")
     private String pathLocation;
 
+    @Column(name = "tipo_de_arquivo")
+    private String tipoDeArquivo;
+
+    @Column(name = "processamento")
+    private String processamento;
+
     @OneToMany(mappedBy = "pathLocation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<SensetiveDataModel> sensetiveDataModelList = new ArrayList<>();
