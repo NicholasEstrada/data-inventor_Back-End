@@ -39,7 +39,7 @@ public class InputDomain implements ValidateDataFormat {
     }
 
     public static void main(String[] args) {
-        String domain = "camarapoa.rs.gov.br"; // Substitua pelo domínio do site que você deseja vasculhar
+        /*String domain = "camarapoa.rs.gov.br"; // Substitua pelo domínio do site que você deseja vasculhar
         try {
             InputDomain inputDomain = new InputDomain(domain);
 
@@ -52,7 +52,7 @@ public class InputDomain implements ValidateDataFormat {
             }
         } catch (UnsupportedEncodingException | InterruptedException e) {
             System.out.println("Erro no processamento: " + e.getMessage());
-        }
+        }*/
     }
 
     private List<String> FounderPDF(String domain, int depth) throws UnsupportedEncodingException, InterruptedException {
