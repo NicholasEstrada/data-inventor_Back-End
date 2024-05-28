@@ -68,6 +68,8 @@ public class InventorService {
                         .orElseGet(() -> {
                             PathLocationModel newpath = new PathLocationModel();
                             newpath.setPathLocation(usuario.get().getId()+"|"+finalDadosEmDado[0]);
+                            newpath.setTipoDeArquivo(finalDadosEmDado[2]);
+                            newpath.setProcessamento(finalDadosEmDado[3]);
                             return  pathLocationRepository.save(newpath);
                         });
 
