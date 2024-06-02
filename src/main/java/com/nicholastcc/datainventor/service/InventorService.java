@@ -41,22 +41,18 @@ public class InventorService {
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(10); // Limite de 10 threads
 
     @Transactional
-    public void inventor(String domain){
+    public void inventor(String domain) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UsuarioModel usuarioModel = usuarioRepository.findByUsername(username);
         Optional<UsuarioModel> usuario = usuarioRepository.findById(usuarioModel.getId());
 
-        if (usuario.isEmpty()) {
-            throw new EntityNotFoundException("Usuário não encontrado.");
-        }
-
         String finalDomain = domain.replaceFirst("^(https?://)?", "");
-        DominioModel dominioIdExist = dominioRepository.findByDominioAndUsuario(finalDomain, usuario.get())
+        DominioModel dominioIdExist = dominioRepository.findByDominio(finalDomain)
                 .orElseGet(() -> {
                     DominioModel newdomain = new DominioModel();
                     newdomain.setDominio(finalDomain);
-                    newdomain.setUsuario(usuario.get());
+                    newdomain.setUsuario(usuarioModel); // Certifique-se de que o domínio seja atribuído ao usuário
                     return dominioRepository.save(newdomain);
                 });
 
@@ -66,7 +62,6 @@ public class InventorService {
         List<String> dataSensetive = InvetorDataSensetive(domain);
         for (String dado : dataSensetive) {
             if (usuario.isPresent()) {
-
                 String[] dadosEmDado = dado.split("\\|");
 
                 String[] finalDadosEmDado = dadosEmDado;
@@ -84,37 +79,31 @@ public class InventorService {
                 dadosEmDado = dadosEmDado[1].split(",");
 
                 for (String sensetive : dadosEmDado) {
-                    SensetiveDataModel sensitiveDataModel = new SensetiveDataModel();
+                    String[] type = sensetive.split(":");
+                    String tipo = type[0];
+                    String sensitive = type[1];
 
-                    try {
-                        //System.out.println(path);
-                        sensitiveDataModel.setPathLocation(path);
-
-                        // atualizar logica ao inserir modelo real de InvetorDataSensetive()
-                        String[] type = sensetive.split(":");
-                        sensitiveDataModel.setTipo(type[0]);
-
-                        // seta o dado
-                        sensitiveDataModel.setSensitive(type[1]);
-
-                        // seta o dominio de referência
-                        sensitiveDataModel.setDominio(dominioIdExist);
-
-                        // aplica o usuario de referencia
-                        sensitiveDataModel.setUsuario(usuario.get()); // ## issue consertar referencia de FK
-                        sensetiveDataRepository.save(sensitiveDataModel);
-                    } catch (Exception e) {
-                        System.out.println("ERRO-------------------MARDITO: " + e.getMessage());
+                    // Verifique se o dado já existe
+                    List<SensetiveDataModel> existingData = sensetiveDataRepository.findByPathLocationAndSensitiveAndUsuario(path, sensitive, usuario.get());
+                    if (existingData.isEmpty()) {
+                        SensetiveDataModel sensitiveDataModel = new SensetiveDataModel();
+                        try {
+                            sensitiveDataModel.setPathLocation(path);
+                            sensitiveDataModel.setTipo(tipo);
+                            sensitiveDataModel.setSensitive(sensitive);
+                            sensitiveDataModel.setDominio(dominioIdExist);
+                            sensitiveDataModel.setUsuario(usuario.get()); // Aplica o usuário de referência
+                            sensetiveDataRepository.save(sensitiveDataModel);
+                        } catch (Exception e) {
+                            System.out.println("ERRO-------------------MARDITO: " + e.getMessage());
+                        }
                     }
                 }
-
             }
-
         }
     }
 
     private List<String> InvetorDataSensetive(String domain) {
-
         List<String> listadepdf = new ArrayList<>();
 
         try {
@@ -130,11 +119,6 @@ public class InventorService {
         } catch (UnsupportedEncodingException | InterruptedException e) {
             System.out.println("Erro no processamento: " + e.getMessage());
         }
-
-        // dadosColetados.add("https://teste.com/links0/arquivo.pdf|CPF:119.920.479-76,CPF:123.456.789-12,EMAIL:tewste@test.com,EMAIL:tewste@test.com");
-        // dadosColetados.add("https://teste.com/links02/arquivo2.pdf|CPF:219.920.479-76,CPF:223.456.789-12,EMAIL:tewste@test.com,EMAIL:tewste@test.com");
-        // dadosColetados.add("C:\\Users\\Nicholas\\Desktop\\Dados Para Análise\\Camera Roll\\Caps.png|e-mail:ninicoco@ggg.co,e-mail:aspammer@website.com,e-mail:edududu@edu.if,CPF:119.920.749-76,CPF:297.251.780-68,CPF:119.920.749-76,|png|OCR");
-
 
         return listadepdf;
     }

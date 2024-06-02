@@ -16,6 +16,9 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Builder
+@Table(name = "sensetive_data", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"path_location_id", "sensitive", "usuario_id"})
+})
 public class SensetiveDataModel {
 
     @Id
@@ -25,7 +28,7 @@ public class SensetiveDataModel {
     @Column(name = "tipo") // CPF, Email, opinião politica, identidade de genero...
     private String tipo;
 
-    @Column(name = "sensitive" /*, unique = true*/ ) // o dado em si, cpf, e-mail
+    @Column(name = "sensitive") // o dado em si, cpf, e-mail
     private String sensitive;
 
     @ManyToOne
@@ -44,5 +47,4 @@ public class SensetiveDataModel {
     @Column(name = "data_criacao")
     @CreationTimestamp // Adicione esta anotação para preencher automaticamente com a data e hora de criação
     private Date dataCriacao;
-
 }
