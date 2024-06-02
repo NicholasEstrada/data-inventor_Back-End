@@ -13,6 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
+@Table(name = "dominio", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"usuario_id", "dominio"})
+})
 public class DominioModel {
 
     @Id
@@ -20,8 +23,13 @@ public class DominioModel {
     private Long id;
 
     @Setter
-    @Column(name = "dominio", unique = true)
+    @Column(name = "dominio")
     private String dominio;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
+    @JsonIgnore
+    private UsuarioModel usuario;
 
     @OneToMany(mappedBy = "dominio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonIgnore

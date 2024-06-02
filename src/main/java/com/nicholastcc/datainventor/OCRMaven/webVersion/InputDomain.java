@@ -106,6 +106,7 @@ public class InputDomain implements ValidateDataFormat {
         if (!domain.startsWith("https://") || !domain.startsWith("http://")) domain = "https://" + domain;
 
         List<String> processarArquivos = FounderPDF(domain, depth);
+        visitedArchives.clear();
         List<String> dadosColetados = Collections.synchronizedList(new ArrayList<>());
 
         CountDownLatch latch = new CountDownLatch(processarArquivos.size());
@@ -127,7 +128,11 @@ public class InputDomain implements ValidateDataFormat {
 
     private static String processArchive(String href) {
         try {
-            ArquivoBase arquivoBase = new ArquivoBase(Objects.requireNonNull(downloadArchive(href)), "", href);
+            File file = downloadArchive(href);
+            if (file == null || !file.exists()) {
+                throw new IllegalArgumentException("The file does not exist or could not be downloaded: " + href);
+            }
+            ArquivoBase arquivoBase = new ArquivoBase(file, "", href);
             if (arquivoBase.arquivo.canExecute()) {
                 SensitiveDataFinder sensitiveDataFinder = new SensitiveDataFinder(arquivoBase);
                 String resultado = sensitiveDataFinder.resultado;
@@ -141,11 +146,26 @@ public class InputDomain implements ValidateDataFormat {
     }
 
     private static File downloadArchive(String url) {
-        try (InputStream in = ValidateDataFormat.Codifier(url).openStream()) {
-            byte[] fileBytes = IOUtils.toByteArray(in);
-            Path tempFilePath = Files.createTempFile("tempFile", ValidateDataFormat.extractFileExtension(url));
-            Files.write(tempFilePath, fileBytes);
-            return tempFilePath.toFile();
+        try {
+            URL validUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) validUrl.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+            connection.setConnectTimeout(TIMEOUT);
+            connection.setReadTimeout(TIMEOUT);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                logError("Failed to download the file. HTTP response code: " + responseCode, null);
+                return null;
+            }
+
+            try (InputStream in = connection.getInputStream()) {
+                byte[] fileBytes = IOUtils.toByteArray(in);
+                Path tempFilePath = Files.createTempFile("tempFile", ValidateDataFormat.extractFileExtension(url));
+                Files.write(tempFilePath, fileBytes);
+                return tempFilePath.toFile();
+            }
         } catch (IOException e) {
             logError("Erro ao baixar o arquivo: " + url, e);
             return null;

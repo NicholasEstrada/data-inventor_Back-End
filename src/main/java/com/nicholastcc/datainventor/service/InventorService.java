@@ -40,47 +40,53 @@ public class InventorService {
 
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(10); // Limite de 10 threads
 
-
+    @Transactional
     public void inventor(String domain){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UsuarioModel usuarioModel = usuarioRepository.findByUsername(username);
         Optional<UsuarioModel> usuario = usuarioRepository.findById(usuarioModel.getId());
 
+        if (usuario.isEmpty()) {
+            throw new EntityNotFoundException("Usuário não encontrado.");
+        }
+
         String finalDomain = domain.replaceFirst("^(https?://)?", "");
-        DominioModel dominioIdExist = dominioRepository.findByDominio(finalDomain)
+        DominioModel dominioIdExist = dominioRepository.findByDominioAndUsuario(finalDomain, usuario.get())
                 .orElseGet(() -> {
                     DominioModel newdomain = new DominioModel();
                     newdomain.setDominio(finalDomain);
+                    newdomain.setUsuario(usuario.get());
                     return dominioRepository.save(newdomain);
                 });
+
         // Pega o id de referencia para referenciar o dado
         DominioModel domainReference = dominioRepository.getById(dominioIdExist.getId());
 
         List<String> dataSensetive = InvetorDataSensetive(domain);
-        for (String dado : dataSensetive ){
+        for (String dado : dataSensetive) {
             if (usuario.isPresent()) {
 
                 String[] dadosEmDado = dado.split("\\|");
 
                 String[] finalDadosEmDado = dadosEmDado;
-                PathLocationModel pathIdExist = pathLocationRepository.findByPathLocation(usuario.get().getId()+"|"+dadosEmDado[0])
+                PathLocationModel pathIdExist = pathLocationRepository.findByPathLocation(usuario.get().getId() + "|" + dadosEmDado[0])
                         .orElseGet(() -> {
                             PathLocationModel newpath = new PathLocationModel();
-                            newpath.setPathLocation(usuario.get().getId()+"|"+finalDadosEmDado[0]);
+                            newpath.setPathLocation(usuario.get().getId() + "|" + finalDadosEmDado[0]);
                             newpath.setTipoDeArquivo(finalDadosEmDado[2]);
                             newpath.setProcessamento(finalDadosEmDado[3]);
-                            return  pathLocationRepository.save(newpath);
+                            return pathLocationRepository.save(newpath);
                         });
 
                 PathLocationModel path = pathLocationRepository.getById(pathIdExist.getId());
 
                 dadosEmDado = dadosEmDado[1].split(",");
 
-                for(String sensetive : dadosEmDado){
+                for (String sensetive : dadosEmDado) {
                     SensetiveDataModel sensitiveDataModel = new SensetiveDataModel();
 
-                    try{
+                    try {
                         //System.out.println(path);
                         sensitiveDataModel.setPathLocation(path);
 
@@ -97,8 +103,8 @@ public class InventorService {
                         // aplica o usuario de referencia
                         sensitiveDataModel.setUsuario(usuario.get()); // ## issue consertar referencia de FK
                         sensetiveDataRepository.save(sensitiveDataModel);
-                    }catch (Exception e){
-                        System.out.println("ERRO-------------------MARDITO: "+e.getMessage());
+                    } catch (Exception e) {
+                        System.out.println("ERRO-------------------MARDITO: " + e.getMessage());
                     }
                 }
 

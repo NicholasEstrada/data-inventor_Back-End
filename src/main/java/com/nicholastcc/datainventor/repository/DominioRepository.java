@@ -1,6 +1,7 @@
 package com.nicholastcc.datainventor.repository;
 
 import com.nicholastcc.datainventor.model.DominioModel;
+import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,6 @@ public interface DominioRepository extends JpaRepository <DominioModel, Long>{
             "JOIN UsuarioModel u ON s.usuario = u " +
             "WHERE u.username = :username")
     List<DominioModel> findDominioByUsuarioUsername(@Param("username") String username);
+
+    Optional<DominioModel> findByDominioAndUsuario(String finalDomain, UsuarioModel usuarioModel);
 }

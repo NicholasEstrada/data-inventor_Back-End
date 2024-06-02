@@ -55,6 +55,9 @@ public class UsuarioModel implements UserDetails {
     @JsonManagedReference
     private List<SensetiveDataModel> sensetiveDataList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<DominioModel> dominioList = new ArrayList<>();
 
     public UsuarioModel(String nome, String username, String password, UsuarioRole role) {
         this.nome = nome;
@@ -62,7 +65,6 @@ public class UsuarioModel implements UserDetails {
         this.password = password;
         this.role = role;
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -46,6 +46,7 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
 			// tess path location ATUALIZAR EM CASO DE TROCA DE AREA DE DESENVOLVIMENTO
 			tess4j.setDatapath("C:\\Users\\Nicholas\\Dev\\TCC\\Back-End\\data-inventor\\tessdata");
 			tess4j.setTessVariable("user_defined_dpi", "96");
+			tess4j.setTessVariable("debug_file", "/dev/null");
 			try {
 				if(arquivoBase.arquivo.length() > 0) {
 					String result = tess4j.doOCR(arquivoBase.arquivo); // at JavaTCC.OCRMaven.SensitiveDataFinder.<init>(SensitiveDataFinder.java:50)
