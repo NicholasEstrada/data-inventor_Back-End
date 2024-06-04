@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,7 +47,6 @@ public class DominioController {
         return ResponseEntity.ok("");
     }
 
-
     @GetMapping("/dominios")
     public ResponseEntity<List<DominioModel>> todosDominios(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -72,11 +69,9 @@ public class DominioController {
 
     @GetMapping("/dadosSensiveisDomain")
     public ResponseEntity<List<SensetiveDataModel>> dadosSensiveisPorDominioEUsuario(@RequestParam Long dominioId) {
-        // Obter o usuário atualmente autenticado
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuario = (UsuarioModel) authentication.getPrincipal();
 
-        // Buscar os SensetiveDataModel relacionados ao domínio e ao usuário
         List<SensetiveDataModel> sensetiveDataModels = sensetiveDataRepository.findByDominioIdAndUsuario(dominioId, usuario);
 
         return ResponseEntity.ok(sensetiveDataModels);
@@ -85,7 +80,27 @@ public class DominioController {
     @GetMapping("/dadosSensiveisPorPathLocation")
     public ResponseEntity<List<SensetiveDataModel>> dadosSensiveisPorPathLocation(@RequestParam Long pathLocationId) {
         Optional<PathLocationModel> pathIdExist = pathLocationRepository.findById(pathLocationId);
-        List<SensetiveDataModel> sensetiveDataModels = sensetiveDataRepository.findByPathLocation(pathIdExist.get());
-        return ResponseEntity.ok(sensetiveDataModels);
+        if (pathIdExist.isPresent()) {
+            List<SensetiveDataModel> sensetiveDataModels = sensetiveDataRepository.findByPathLocation(pathIdExist.get());
+            return ResponseEntity.ok(sensetiveDataModels);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @DeleteMapping("/deletesensetivedatas/{id}")
+    public ResponseEntity<String> deleteDominio(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsuarioModel usuario = (UsuarioModel) authentication.getPrincipal();
+
+        Optional<DominioModel> dominioOptional = dominioRepository.findById(id);
+
+        if (dominioOptional.isPresent()) {
+            System.out.println("################------> " + id +"|"+ Long.valueOf(usuario.getId()));
+            sensetiveDataRepository.deleteByDominioIdAndUsuarioId(id, Long.valueOf(usuario.getId()));
+            return ResponseEntity.ok("Dados sensíveis do domínio deletados com sucesso.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Domínio não encontrado.");
+        }
     }
 }
