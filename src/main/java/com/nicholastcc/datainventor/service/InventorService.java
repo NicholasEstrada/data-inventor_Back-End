@@ -120,6 +120,18 @@ public class InventorService {
             System.out.println("Erro no processamento: " + e.getMessage());
         }
 
+        /*listadepdf.add("https://saobentodosul.ifc.edu.br/wp-content/blogs.dir/19/files/sites/19/2022/12/Guia-do-Estudante-2020_compressed.pdf|e-mail:suporte.sbs@ifc.edu.br,e-mail:cti.sbs@ifc.edu.br,e-mail:gabinete.sbs@ifc.edu.br,e-mail:cecom.sbs@ifc.edu.br,e-mail:dde.sbs@ifc.edu.br,e-mail:registroacademico.sbs@ifc.edu.br,e-mail:atendimentoestudantil.sbs@ifc.edu.br,e-mail:cge.sbs@ifc.edu.br,e-mail:automacao.tec.sbs@ifc.edu.br,e-mail:informatica.tec.sbs@ifc.edu.br,e-mail:seguranca.tec.sbs@ifc.edu.br,e-mail:computacao.grad.sbs@ifc.edu.br,e-mail:automacao.grad.sbs@ifc.edu.br,e-mail:pesquisa.sbs@ifc.edu.br,e-mail:extensao.sbs@ifc.edu.br,e-mail:napne.sbs@ifc.edu.br,e-mail:nupe.sbs@ifc.edu.br,e-mail:biblioteca.sbs@ifc.edu.br,e-mail:dap.sbs@ifc.edu.br,,|pdf|PDFText");
+        listadepdf.add("https://saobentodosul.ifc.edu.br/wp-content/blogs.dir/19/files/sites/19/2023/06/IFC-SBS-Uniforme.pdf|,,|pdf|PDFText");
+        listadepdf.add("https://acessoainformacao.ifc.edu.br/wp-content/uploads/sites/26/2022/10/Portaria-Normativa-005-2017-de-12-04-17-Comite-de-Gestao-de-Risco-Consolidada-sem-texto-tachado.pdf|,,|pdf|PDFText");
+        listadepdf.add("https://governanca.ifc.edu.br/wp-content/uploads/sites/81/2024/04/Memorando-Eletronico-SIPAC-Convocacao-2a-reuniao.pdf|,,|pdf|PDFText");
+        listadepdf.add("https://governanca.ifc.edu.br/wp-content/uploads/sites/81/2024/04/Memorando-Eletronico-SIPAC-Convocacao-1a-reuniao.pdf|,,|pdf|PDFText");
+        listadepdf.add("https://governanca.ifc.edu.br/wp-content/uploads/sites/81/2024/04/Sumula-da-1a-Reuniao-do-Comite-de-Governanca-Riscos-e-Controles.pdf|,,|pdf|PDFText");
+        listadepdf.add("https://governanca.ifc.edu.br/wp-content/uploads/sites/81/2024/04/Memorando-Eletronico-SIPAC-Convocacao-3a-reuniao.pdf|,,|pdf|PDFText");
+        listadepdf.add("https://governanca.ifc.edu.br/wp-content/uploads/sites/81/2024/04/Sumula-da-2a-Reuniao-do-Comite-de-Governanca-Riscos-e-Controles.pdf|,,|pdf|PDFText");
+        listadepdf.add("https://governanca.ifc.edu.br/wp-content/uploads/sites/81/2024/04/Sumula-da-3a-Reuniao-do-Comite-de-Governanca-Riscos-e-Controles.pdf|,,|pdf|PDFText");
+        listadepdf.add("https://luzerna.ifc.edu.br/wp-content/uploads/2023/12/REGULAMENTO-.pdf|e-mail:brigada.luzerna@ifc.edu.br,,|pdf|PDFText");
+        listadepdf.add("http://www.camboriu.ifc.edu.br/wp-content/uploads/2021/06/Organiza%C3%A7%C3%A3o-Did%C3%A1tica-do-Cursos-do-IFC-diagramada.pdf|,,|pdf|PDFText");*/
+
         return listadepdf;
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -96,11 +97,14 @@ public class DominioController {
         Optional<DominioModel> dominioOptional = dominioRepository.findById(id);
 
         if (dominioOptional.isPresent()) {
-            System.out.println("################------> " + id +"|"+ Long.valueOf(usuario.getId()));
             sensetiveDataRepository.deleteByDominioIdAndUsuarioId(id, Long.valueOf(usuario.getId()));
-            return ResponseEntity.ok("Dados sensíveis do domínio deletados com sucesso.");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "OK");
+            return ResponseEntity.ok(response.toString());
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Domínio não encontrado.");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Domínio não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.toString());
         }
     }
 }
