@@ -25,6 +25,9 @@ public class PathLocationModel {
     @Column(name = "path_location")
     private String pathLocation;
 
+    @Column(name = "path_parent")
+    private String pathParent;
+
     @Column(name = "tipo_de_arquivo")
     private String tipoDeArquivo;
 

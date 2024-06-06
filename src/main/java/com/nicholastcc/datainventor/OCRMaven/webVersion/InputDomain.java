@@ -71,7 +71,7 @@ public class InputDomain implements ValidateDataFormat {
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 String contentType = connection.getContentType();
-                if (contentType != null && contentType.equals("application/pdf")) visitedArchives.add(domain);
+                if (contentType != null && contentType.equals("application/pdf")) visitedArchives.add(domain + "," + domain);
 
                 Document doc = Jsoup.parse(connection.getInputStream(), null, url);
                 Elements links = doc.select("a[href]");
@@ -85,8 +85,8 @@ public class InputDomain implements ValidateDataFormat {
 
                     if ((ValidateDataFormat.isPDF(href) || (ValidateDataFormat.isImage(href)) && href.contains(domain.replaceAll("https?://", "")))) {
                         if (!visitedArchives.contains(href)) {
-                            System.out.println("AGAREF:"+href);
-                            visitedArchives.add(href);
+                            System.out.println("AGAREF:"+href + " DOMAINN " + domain);
+                            visitedArchives.add(domain + "," + href);
                         }
                     } else if (href.contains(this.DOMINIO_DEPTH)) {
                         FounderPDF(href, depth + 1);
@@ -113,9 +113,9 @@ public class InputDomain implements ValidateDataFormat {
         for (String href : processarArquivos) {
             threadPool.submit(() -> {
                 try {
-                    String resultado = processArchive(href);
+                    String resultado = processArchive(href.split(",")[1]);
                     if (!resultado.isEmpty()) {
-                        dadosColetados.add(resultado);
+                        dadosColetados.add(href.split(",")[0] + "," + resultado);
                     }
                 } finally {
                     latch.countDown();
