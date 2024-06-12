@@ -34,10 +34,16 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
             }else{
                 resultado = arquivoBase.pathLocation.replaceAll("\\\\tempFile.*", "") +
 							"|" + DataInspector.procuraEmail(result, 0) +
-                            "," + DataInspector.procuraCPF(result, 0) +
-							"," + DataInspector.ProcuraOpiniaoPolitica(result) +
-                            "|" + arquivoBase.extensaoArquivo +
-                            "|" + arquivoBase.tipoProcessamento;
+							"," + DataInspector.procuraCPF(result, 0) +
+							"," + DataInspector.extractOpiniaoPolitica(result) +
+							"," + DataInspector.extractVidaSexual(result) +
+							"," + DataInspector.extractDadoSaude(result) +
+							"," + DataInspector.extractDadoGenetico(result) +
+							"," + DataInspector.extractDadoBiometrico(result) +
+							"," + DataInspector.extractConviccaoReligiosa(result) +
+							"," + DataInspector.extractOrigemRacial(result) +
+							"|" + arquivoBase.extensaoArquivo +
+							"|" + arquivoBase.tipoProcessamento;
             }
         }
 
@@ -53,7 +59,13 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
 					resultado = arquivoBase.pathLocation.replaceAll("\\\\tempFile.*", "") +
 								"|" + DataInspector.procuraEmail(result, 0) +
 								"," + DataInspector.procuraCPF(result, 0) +
-								"," + DataInspector.ProcuraOpiniaoPolitica(result) +
+								"," + DataInspector.extractOpiniaoPolitica(result) +
+								"," + DataInspector.extractVidaSexual(result) +
+								"," + DataInspector.extractDadoSaude(result) +
+								"," + DataInspector.extractDadoGenetico(result) +
+								"," + DataInspector.extractDadoBiometrico(result) +
+								"," + DataInspector.extractConviccaoReligiosa(result) +
+								"," + DataInspector.extractOrigemRacial(result) +
 								"|" + arquivoBase.extensaoArquivo +
 								"|" + arquivoBase.tipoProcessamento;
 				}else{

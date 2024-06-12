@@ -80,9 +80,16 @@ public class InventorService {
                 dadosEmDado = dadosEmDado[1].split(",");
 
                 for (String sensetive : dadosEmDado) {
-                    String[] type = sensetive.split(":");
-                    String tipo = type[0];
-                    String sensitive = type[1];
+                    String sensitive = "";
+                    String tipo = "";
+                    try {
+                        String[] type = sensetive.split(":");
+                        tipo = type[0];
+                        sensitive = type[1];
+                    } catch (Exception e) {
+                        System.out.println("dadosEmDado[1].split(\",\") SEM POSICAO: " + dadosEmDado[1] + " | ERRO: " + e.getMessage());
+                        continue;
+                    }
 
                     // Verifique se o dado já existe
                     List<SensetiveDataModel> existingData = sensetiveDataRepository.findByPathLocationAndSensitiveAndUsuario(path, sensitive, usuario.get());
