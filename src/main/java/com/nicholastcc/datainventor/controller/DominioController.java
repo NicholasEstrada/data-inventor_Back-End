@@ -48,6 +48,12 @@ public class DominioController {
         return ResponseEntity.ok("");
     }
 
+    @GetMapping("/task/status")
+    public ResponseEntity<Integer> getTaskStatus() {
+        int status = inventorService.getTaskStatus();
+        return ResponseEntity.ok(status);
+    }
+
     @GetMapping("/dominios")
     public ResponseEntity<List<DominioModel>> todosDominios(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
