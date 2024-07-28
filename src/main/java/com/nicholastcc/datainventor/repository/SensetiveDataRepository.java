@@ -3,6 +3,8 @@ package com.nicholastcc.datainventor.repository;
 import com.nicholastcc.datainventor.model.PathLocationModel;
 import com.nicholastcc.datainventor.model.SensetiveDataModel;
 import com.nicholastcc.datainventor.model.Usuarios.UsuarioModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +19,7 @@ public interface SensetiveDataRepository extends JpaRepository<SensetiveDataMode
 
     List<SensetiveDataModel> findByUsuarioId(Long usuarioId);
 
-    List<SensetiveDataModel> findByDominioIdAndUsuario(Long dominioId, UsuarioModel usuario);
+    Page<SensetiveDataModel> findByDominioIdAndUsuario(Long dominioId, UsuarioModel usuario, Pageable pageable);
 
     List<SensetiveDataModel> findByPathLocation(PathLocationModel pathLocation);
 

@@ -10,6 +10,10 @@ import com.nicholastcc.datainventor.repository.SensetiveDataRepository;
 import com.nicholastcc.datainventor.repository.UsuarioRepository;
 import com.nicholastcc.datainventor.service.InventorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -75,11 +79,15 @@ public class DominioController {
     }
 
     @GetMapping("/dadosSensiveisDomain")
-    public ResponseEntity<List<SensetiveDataModel>> dadosSensiveisPorDominioEUsuario(@RequestParam Long dominioId) {
+    public ResponseEntity<Page<SensetiveDataModel>> dadosSensiveisPorDominioEUsuario(
+            @RequestParam Long dominioId,
+            @RequestParam int page,
+            @RequestParam int size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UsuarioModel usuario = (UsuarioModel) authentication.getPrincipal();
 
-        List<SensetiveDataModel> sensetiveDataModels = sensetiveDataRepository.findByDominioIdAndUsuario(dominioId, usuario);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        Page<SensetiveDataModel> sensetiveDataModels = sensetiveDataRepository.findByDominioIdAndUsuario(dominioId, usuario, pageable);
 
         return ResponseEntity.ok(sensetiveDataModels);
     }
