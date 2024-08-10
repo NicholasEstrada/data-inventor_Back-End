@@ -29,21 +29,10 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
                 System.err.println(e.getMessage());
             }
 
-            if ( result == null || result.isEmpty()) {
+            if (result.isEmpty()) {
                 arquivoBase.tipoProcessamento = "OCR";
             }else{
-                resultado = arquivoBase.pathLocation.replaceAll("\\\\tempFile.*", "") +
-							"|" + DataInspector.procuraEmail(result, 0) +
-							"," + DataInspector.procuraCPF(result, 0) +
-							"," + DataInspector.extractOpiniaoPolitica(result) +
-							"," + DataInspector.extractVidaSexual(result) +
-							"," + DataInspector.extractDadoSaude(result) +
-							"," + DataInspector.extractDadoGenetico(result) +
-							"," + DataInspector.extractDadoBiometrico(result) +
-							"," + DataInspector.extractConviccaoReligiosa(result) +
-							"," + DataInspector.extractOrigemRacial(result) +
-							"|" + arquivoBase.extensaoArquivo +
-							"|" + arquivoBase.tipoProcessamento;
+                resultado = resultadosDaBusca(arquivoBase, result);
             }
         }
 
@@ -56,18 +45,7 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
 			try {
 				if(arquivoBase.arquivo.length() > 0) {
 					String result = tess4j.doOCR(arquivoBase.arquivo); // at JavaTCC.OCRMaven.SensitiveDataFinder.<init>(SensitiveDataFinder.java:50)
-					resultado = arquivoBase.pathLocation.replaceAll("\\\\tempFile.*", "") +
-								"|" + DataInspector.procuraEmail(result, 0) +
-								"," + DataInspector.procuraCPF(result, 0) +
-								"," + DataInspector.extractOpiniaoPolitica(result) +
-								"," + DataInspector.extractVidaSexual(result) +
-								"," + DataInspector.extractDadoSaude(result) +
-								"," + DataInspector.extractDadoGenetico(result) +
-								"," + DataInspector.extractDadoBiometrico(result) +
-								"," + DataInspector.extractConviccaoReligiosa(result) +
-								"," + DataInspector.extractOrigemRacial(result) +
-								"|" + arquivoBase.extensaoArquivo +
-								"|" + arquivoBase.tipoProcessamento;
+					resultado = resultadosDaBusca(arquivoBase, result);
 				}else{
 					System.err.println("Arquivo PDF vazio ou corrompido: " + arquivoBase.arquivo.getName());
 				}
@@ -85,6 +63,26 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
 			String text = pdfStripper.getText(document);
 			return text.trim();
 		}
+	}
+
+	private static String resultadosDaBusca(ArquivoBase arquivoBase, String result) throws IOException {
+		try {
+			return arquivoBase.pathLocation.replaceAll("\\\\tempFile.*", "") +
+					"|" + DataInspector.procuraEmail(result, 0) +
+					"," + DataInspector.procuraCPF(result, 0) +
+					"," + DataInspector.extractOpiniaoPolitica(result) +
+					"," + DataInspector.extractVidaSexual(result) +
+					"," + DataInspector.extractDadoSaude(result) +
+					"," + DataInspector.extractDadoGenetico(result) +
+					"," + DataInspector.extractDadoBiometrico(result) +
+					"," + DataInspector.extractConviccaoReligiosa(result) +
+					"," + DataInspector.extractOrigemRacial(result) +
+					"|" + arquivoBase.extensaoArquivo +
+					"|" + arquivoBase.tipoProcessamento;
+		}catch (Exception e){
+			System.err.println(e);
+		}
+		return "";
 	}
 
 
