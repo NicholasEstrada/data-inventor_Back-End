@@ -43,6 +43,8 @@ public class InventorService {
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(10); // Limite de 10 threads
     private final AtomicInteger taskStatus = new AtomicInteger(0); // Adicionado para status da tarefa
 
+    private int quantityLinkVisitedEND = 0;
+
     @Transactional
     public void inventor(String domain) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -54,18 +56,17 @@ public class InventorService {
                 taskStatus.set(1); // Task started
 
                 String finalDomain = domain.replaceFirst("^(https?://)?", "");
-                DominioModel dominioIdExist = dominioRepository.findByDominio(finalDomain)
-                        .orElseGet(() -> {
-                            DominioModel newdomain = new DominioModel();
-                            newdomain.setDominio(finalDomain);
-                            newdomain.setUsuario(usuarioModel); // Certifique-se de que o domínio seja atribuído ao usuário
-                            return dominioRepository.save(newdomain);
-                        });
 
-                // Pega o id de referencia para referenciar o dado
-                DominioModel domainReference = dominioRepository.getById(dominioIdExist.getId());
+                DominioModel dominioIdExist = new DominioModel();
+                dominioIdExist.setDominio(finalDomain);
+                dominioIdExist.setUsuario(usuarioModel);
 
                 List<String> dataSensetive = InvetorDataSensetive(domain);
+
+                dominioIdExist.setQtd_pag_visitadas(quantityLinkVisitedEND);
+
+                dominioIdExist =  dominioRepository.save(dominioIdExist);
+
                 for (String dado : dataSensetive) {
                     taskStatus.incrementAndGet(); // Update status incrementally
                     if (usuario.isPresent()) {
@@ -141,6 +142,7 @@ public class InventorService {
             for (String content : listadepdf) {
                 System.out.println("Arquivo encontrado: " + content);
             }
+            quantityLinkVisitedEND = inputDomain.quantityLinkVisited;
         } catch (UnsupportedEncodingException | InterruptedException e) {
             System.out.println("Erro no processamento: " + e.getMessage());
         }

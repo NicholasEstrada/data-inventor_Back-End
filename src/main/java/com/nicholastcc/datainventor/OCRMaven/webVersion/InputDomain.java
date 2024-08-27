@@ -26,20 +26,22 @@ import java.util.concurrent.Executors;
 
 public class InputDomain implements ValidateDataFormat {
 
-    private static final Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
-    private static final List<String> visitedArchives = Collections.synchronizedList(new ArrayList<>());
+    private final Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
+    private final List<String> visitedArchives = Collections.synchronizedList(new ArrayList<>());
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(10); // Limite de 10 threads
-    private static final int TIMEOUT = 5000;
+    private static final int TIMEOUT = 3000;
 
     private static final int MAX_DEPTH = 4;
     private final String DOMINIO_DEPTH;
+
+    public int quantityLinkVisited;
 
     public InputDomain(String dominio) {
         this.DOMINIO_DEPTH = dominio;
     }
 
     public static void main(String[] args) {
-        /*String domain = "camarapoa.rs.gov.br"; // Substitua pelo domínio do site que você deseja vasculhar
+        String domain = "ifc.edu.br"; // Substitua pelo domínio do site que você deseja vasculhar
         try {
             InputDomain inputDomain = new InputDomain(domain);
 
@@ -52,13 +54,26 @@ public class InputDomain implements ValidateDataFormat {
             }
         } catch (UnsupportedEncodingException | InterruptedException e) {
             System.out.println("Erro no processamento: " + e.getMessage());
-        }*/
+        }
     }
 
     private List<String> FounderPDF(String domain, int depth) throws UnsupportedEncodingException, InterruptedException {
-        if (depth > MAX_DEPTH || !visitedUrls.add(domain)) {
+        int connectionApli = 404;
+
+        System.out.println("########################################################");
+        if (visitedUrls.contains(domain)) {
+            System.out.println("!visitedUrls.add(domain) " + !visitedUrls.add(domain));
+            System.out.println("domain: " + domain);
+            System.out.println("depth > MAX_DEPTH: " + depth +">"+ MAX_DEPTH);
+            System.out.println("CONTENE: "+ Collections.emptyList());
             return Collections.emptyList();
+        }else{
+            visitedUrls.add(domain);
+            System.out.println("visitedUrls.size():"+visitedUrls.size());
+            System.out.println("domaindomain:"+domain);
+            System.out.println("visitedArchives:"+visitedArchives.size());
         }
+
 
         try {
             URI urlURI = new URI(domain);
@@ -69,7 +84,13 @@ public class InputDomain implements ValidateDataFormat {
             connection.setConnectTimeout(TIMEOUT);
             connection.setReadTimeout(TIMEOUT);
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            try{
+                connectionApli = connection.getResponseCode(); //linha 88
+            }catch (Exception e){
+                System.err.println("ERRO ao connection.getResponseCode():" + e.getMessage());
+            }
+
+            if (connectionApli == HttpURLConnection.HTTP_OK) {
                 String contentType = connection.getContentType();
                 if (contentType != null && contentType.equals("application/pdf")) visitedArchives.add(domain + "," + domain);
 
@@ -84,19 +105,27 @@ public class InputDomain implements ValidateDataFormat {
                     }
 
                     if ((ValidateDataFormat.isPDF(href) || (ValidateDataFormat.isImage(href)) && href.contains(domain.replaceAll("https?://", "")))) {
-                        if (!visitedArchives.contains(href)) {
+                        if (!visitedArchives.contains(domain + "," + href)){
                             System.out.println("AGAREF:"+href + " DOMAINN " + domain);
                             visitedArchives.add(domain + "," + href);
                         }
-                    } else if (href.contains(this.DOMINIO_DEPTH)) {
-                        FounderPDF(href, depth + 1);
+                    } else
+                    if (href.contains(this.DOMINIO_DEPTH) &&
+                        !visitedUrls.contains(href) && !visitedArchives.contains(href)){
+                        try{
+                            FounderPDF(href, depth + 1);
+                        }catch (Exception e){ // linha 177
+                            System.err.println("ERRO NA RECURCAO!!!!!!! " + e.getMessage());
+                        }
                     }
                 }
             } else {
                 System.out.println("Falha ao conectar à URL: " + url);
+                return Collections.emptyList();
             }
         } catch (IOException | URISyntaxException e) {
             logError("Erro ao processar a URL: " + domain, e);
+            return Collections.emptyList();
         }
 
         return new ArrayList<>(visitedArchives);
@@ -107,6 +136,9 @@ public class InputDomain implements ValidateDataFormat {
 
         List<String> processarArquivos = FounderPDF(domain, depth);
         visitedArchives.clear();
+        quantityLinkVisited = visitedUrls.size();
+        System.out.println("QTD URL: "+visitedUrls.size());
+        visitedUrls.clear();
         List<String> dadosColetados = Collections.synchronizedList(new ArrayList<>());
 
         CountDownLatch latch = new CountDownLatch(processarArquivos.size());
@@ -133,12 +165,12 @@ public class InputDomain implements ValidateDataFormat {
                 throw new IllegalArgumentException("The file does not exist or could not be downloaded: " + href);
             }
             ArquivoBase arquivoBase = new ArquivoBase(file, "", href);
-            if (arquivoBase.arquivo.canExecute()) {
+            // if (arquivoBase.arquivo.canExecute()) { -> da bug no linux
                 SensitiveDataFinder sensitiveDataFinder = new SensitiveDataFinder(arquivoBase);
                 String resultado = sensitiveDataFinder.resultado;
                 sensitiveDataFinder.close();
                 return resultado;
-            }
+            // }
         } catch (Exception e) {
             logError("Erro ao processar o arquivo: " + href, e);
         }
