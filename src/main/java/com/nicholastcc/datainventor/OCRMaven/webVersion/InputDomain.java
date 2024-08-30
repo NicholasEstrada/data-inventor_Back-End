@@ -29,7 +29,7 @@ public class InputDomain implements ValidateDataFormat {
     private final Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
     private final List<String> visitedArchives = Collections.synchronizedList(new ArrayList<>());
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(10); // Limite de 10 threads
-    private static final int TIMEOUT = 3000;
+    private static final int TIMEOUT = 6000;
 
     private static final int MAX_DEPTH = 4;
     private final String DOMINIO_DEPTH;
@@ -57,84 +57,86 @@ public class InputDomain implements ValidateDataFormat {
         }
     }
 
-    private List<String> FounderPDF(String domain, int depth) throws UnsupportedEncodingException, InterruptedException {
-        int connectionApli = 404;
+    private List<String> FounderPDF(String startDomain) throws UnsupportedEncodingException, InterruptedException {
+        Deque<String> stack = new ArrayDeque<>();
+        Set<String> stackSet = Collections.synchronizedSet(new HashSet<>()); // Conjunto para rastrear URLs na pilha
+        stack.push(startDomain);
+        stackSet.add(startDomain); // Adicionar o domínio inicial ao conjunto
+        List<String> result = new ArrayList<>();
 
-        System.out.println("########################################################");
-        if (visitedUrls.contains(domain)) {
-            System.out.println("!visitedUrls.add(domain) " + !visitedUrls.add(domain));
-            System.out.println("domain: " + domain);
-            System.out.println("depth > MAX_DEPTH: " + depth +">"+ MAX_DEPTH);
-            System.out.println("CONTENE: "+ Collections.emptyList());
-            return Collections.emptyList();
-        }else{
-            visitedUrls.add(domain);
-            System.out.println("visitedUrls.size():"+visitedUrls.size());
-            System.out.println("domaindomain:"+domain);
-            System.out.println("visitedArchives:"+visitedArchives.size());
-        }
+        while (!stack.isEmpty()) {
+            String currentDomain = stack.pop();
+            stackSet.remove(currentDomain); // Remover da pilha após processar
 
-
-        try {
-            URI urlURI = new URI(domain);
-            String url = urlURI.toASCIIString();
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
-            connection.setConnectTimeout(TIMEOUT);
-            connection.setReadTimeout(TIMEOUT);
-
-            try{
-                connectionApli = connection.getResponseCode(); //linha 88
-            }catch (Exception e){
-                System.err.println("ERRO ao connection.getResponseCode():" + e.getMessage());
+            if (visitedUrls.contains(currentDomain)) {
+                continue;
             }
 
-            if (connectionApli == HttpURLConnection.HTTP_OK) {
-                String contentType = connection.getContentType();
-                if (contentType != null && contentType.equals("application/pdf")) visitedArchives.add(domain + "," + domain);
+            visitedUrls.add(currentDomain);
 
-                Document doc = Jsoup.parse(connection.getInputStream(), null, url);
-                Elements links = doc.select("a[href]");
+            System.out.println("#######################################################");
+            System.out.println("visitedUrls.size():" + visitedUrls.size());
+            System.out.println("normalizarUrl(currentDomain): " + normalizarUrl(currentDomain));
+            System.out.println("currentDomain: " + currentDomain);
+            System.out.println("visitedArchives: " + visitedArchives.size());
 
-                for (Element link : links) {
-                    String href = link.attr("abs:href");
+            try {
+                URI urlURI = new URI(currentDomain);
+                String url = urlURI.toASCIIString();
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+                connection.setConnectTimeout(TIMEOUT);
+                connection.setReadTimeout(TIMEOUT);
 
-                    if (!ValidateDataFormat.isSupportedProtocol(href)) {
-                        continue;
+                int connectionApli = connection.getResponseCode();
+
+                if (connectionApli == HttpURLConnection.HTTP_OK) {
+                    String contentType = connection.getContentType();
+                    if (contentType != null && contentType.equals("application/pdf")) {
+                        visitedArchives.add(currentDomain + "," + currentDomain);
                     }
 
-                    if ((ValidateDataFormat.isPDF(href) || (ValidateDataFormat.isImage(href)) && href.contains(domain.replaceAll("https?://", "")))) {
-                        if (!visitedArchives.contains(domain + "," + href)){
-                            System.out.println("AGAREF:"+href + " DOMAINN " + domain);
-                            visitedArchives.add(domain + "," + href);
+                    Document doc = Jsoup.parse(connection.getInputStream(), null, url);
+                    Elements links = doc.select("a[href]");
+
+                    for (Element link : links) {
+                        String href = link.attr("abs:href");
+                        href = normalizarUrl(href);
+
+                        if (!ValidateDataFormat.isSupportedProtocol(href)) {
+                            continue;
                         }
-                    } else
-                    if (href.contains(this.DOMINIO_DEPTH) &&
-                        !visitedUrls.contains(href) && !visitedArchives.contains(href)){
-                        try{
-                            FounderPDF(href, depth + 1);
-                        }catch (Exception e){ // linha 177
-                            System.err.println("ERRO NA RECURCAO!!!!!!! " + e.getMessage());
+
+                        if (ValidateDataFormat.isPDF(href) || ValidateDataFormat.isImage(href)) {
+                            if (!visitedArchives.contains(currentDomain + "," + href)) {
+                                System.out.println("PDFACHADO: " + href + " DOMAIN: " + currentDomain);
+                                visitedArchives.add(currentDomain + "," + href);
+                            }
+                        } else if (href.contains(this.DOMINIO_DEPTH) &&
+                                !visitedUrls.contains(href) && !stackSet.contains(href)) {
+                            stack.push(href);  // Adiciona o link para processar posteriormente
+                            stackSet.add(href); // Adiciona ao conjunto de URLs na pilha
+                            System.out.println("ADDTOLISTENER: " + href);
                         }
                     }
+                } else {
+                    System.out.println("Falha ao conectar à URL: " + url);
                 }
-            } else {
-                System.out.println("Falha ao conectar à URL: " + url);
-                return Collections.emptyList();
+            } catch (IOException | URISyntaxException e) {
+                logError("Erro ao processar a URL: " + currentDomain, e);
             }
-        } catch (IOException | URISyntaxException e) {
-            logError("Erro ao processar a URL: " + domain, e);
-            return Collections.emptyList();
+            //ERif(visitedUrls.size()/3 >= visitedArchives.size()) return new ArrayList<>(visitedArchives);
         }
 
         return new ArrayList<>(visitedArchives);
     }
 
+
     public List<String> InvetorDataSensetive(String domain, int depth) throws UnsupportedEncodingException, InterruptedException {
         if (!domain.startsWith("https://") || !domain.startsWith("http://")) domain = "https://" + domain;
 
-        List<String> processarArquivos = FounderPDF(domain, depth);
+        List<String> processarArquivos = FounderPDF(domain);
         visitedArchives.clear();
         quantityLinkVisited = visitedUrls.size();
         System.out.println("QTD URL: "+visitedUrls.size());
@@ -203,6 +205,39 @@ public class InputDomain implements ValidateDataFormat {
             return null;
         }
     }
+
+    private String normalizarUrl(String url) {
+        // Remover fragmentos (tudo após #)
+        int indexFragment = url.indexOf("#");
+        if (indexFragment != -1) {
+            url = url.substring(0, indexFragment);
+        }
+        indexFragment = url.indexOf("&");
+        if (indexFragment != -1) {
+            url = url.substring(0, indexFragment);
+        }
+        indexFragment = url.indexOf("?");
+        if (indexFragment != -1) {
+            url = url.substring(0, indexFragment);
+        }
+        indexFragment = url.indexOf(";");
+        if (indexFragment != -1) {
+            url = url.substring(0, indexFragment);
+        }
+        indexFragment = url.indexOf(",");
+        if (indexFragment != -1) {
+            url = url.substring(0, indexFragment);
+        }
+
+        // Remover parâmetros irrelevantes para evitar duplicidade
+        url = url.replaceAll("(tab_files|tab_details|do|ns|image)=[^&]*&?", "");
+
+        // Remover & ou ? no final caso fiquem pendentes após a substituição
+        url = url.replaceAll("[&?]$", "");
+
+        return url;
+    }
+
 
     private static void logError(String message, Exception e) {
         System.err.println(message);
