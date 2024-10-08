@@ -23,12 +23,13 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 
 public class InputDomain implements ValidateDataFormat {
 
-    private final Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
-    private final List<String> visitedArchives = Collections.synchronizedList(new ArrayList<>());
-    private static final ExecutorService threadPool = Executors.newFixedThreadPool(10); // Limite de 10 threads
+    //private final Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
+    //private final List<String> visitedArchives = Collections.synchronizedList(new ArrayList<>());
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(10); // Limite de 10 threads
     private static final int TIMEOUT = 6000;
 
     private static final int MAX_DEPTH = 4;
@@ -41,7 +42,7 @@ public class InputDomain implements ValidateDataFormat {
     }
 
     public static void main(String[] args) {
-        String domain = "ifc.edu.br"; // Substitua pelo domínio do site que você deseja vasculhar
+        /*String domain = "ifc.edu.br"; // Substitua pelo domínio do site que você deseja vasculhar
         try {
             InputDomain inputDomain = new InputDomain(domain);
 
@@ -54,19 +55,28 @@ public class InputDomain implements ValidateDataFormat {
             }
         } catch (UnsupportedEncodingException | InterruptedException e) {
             System.out.println("Erro no processamento: " + e.getMessage());
-        }
+        }*/
     }
 
     private List<String> FounderPDF(String startDomain) throws UnsupportedEncodingException, InterruptedException {
-        Deque<String> stack = new ArrayDeque<>();
+        // Limpeza para consulta completa
+        startDomain = startDomain.replaceAll("/$", "");
+
+        Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
+        List<String> visitedArchives = Collections.synchronizedList(new ArrayList<>());
+
+        Deque<TreeNode> stack = new ArrayDeque<>();
         Set<String> stackSet = Collections.synchronizedSet(new HashSet<>()); // Conjunto para rastrear URLs na pilha
-        stack.push(startDomain);
+        stack.push(new TreeNode(startDomain, 0));
         stackSet.add(startDomain); // Adicionar o domínio inicial ao conjunto
         List<String> result = new ArrayList<>();
+        Map<String, Integer> urlOccurrences = new HashMap<>();
+        boolean stopAddingUrls = false; // Variável de controle para parar a adição de novas URLs
 
         while (!stack.isEmpty()) {
-            String currentDomain = stack.pop();
-            stackSet.remove(currentDomain); // Remover da pilha após processar
+            TreeNode currentNode = stack.pop();
+            stackSet.remove(currentNode.url); // Remover da pilha após processar
+            String currentDomain = currentNode.url;
 
             if (visitedUrls.contains(currentDomain)) {
                 continue;
@@ -115,9 +125,32 @@ public class InputDomain implements ValidateDataFormat {
                             }
                         } else if (href.contains(this.DOMINIO_DEPTH) &&
                                 !visitedUrls.contains(href) && !stackSet.contains(href)) {
-                            stack.push(href);  // Adiciona o link para processar posteriormente
-                            stackSet.add(href); // Adiciona ao conjunto de URLs na pilha
-                            System.out.println("ADDTOLISTENER: " + href);
+
+                            if (!stopAddingUrls) {
+                                // Verifica a distância de Levenshtein antes de adicionar o link à pilha
+                                int similarCount = 0;
+                                for (String existingUrl : urlOccurrences.keySet()) {
+                                    // contador de semelhantes
+                                    if (levenshtein(href, existingUrl)) {
+                                        similarCount++;
+                                    }
+
+                                    if (similarCount >= 5) {
+                                        System.out.println("Busca encerrada nesta ramificação devido à alta similaridade de URLs.");
+                                        stopAddingUrls = true; // Parar de adicionar novas URLs
+                                        break;
+                                    }
+                                }
+                                urlOccurrences.put(href, 1);
+                            }
+
+                            if (!stopAddingUrls) {
+                                TreeNode childNode = new TreeNode(href, currentNode.depth + 1);
+                                currentNode.children.add(childNode);
+                                stack.push(childNode);  // Adiciona o link para processar posteriormente
+                                stackSet.add(href); // Adiciona ao conjunto de URLs na pilha
+                                System.out.println("ADDTOLISTENER: " + href);
+                            }
                         }
                     }
                 } else {
@@ -126,9 +159,8 @@ public class InputDomain implements ValidateDataFormat {
             } catch (IOException | URISyntaxException e) {
                 logError("Erro ao processar a URL: " + currentDomain, e);
             }
-            //ERif(visitedUrls.size()/3 >= visitedArchives.size()) return new ArrayList<>(visitedArchives);
         }
-
+        this.quantityLinkVisited = visitedUrls.size();
         return new ArrayList<>(visitedArchives);
     }
 
@@ -137,10 +169,6 @@ public class InputDomain implements ValidateDataFormat {
         if (!domain.startsWith("https://") || !domain.startsWith("http://")) domain = "https://" + domain;
 
         List<String> processarArquivos = FounderPDF(domain);
-        visitedArchives.clear();
-        quantityLinkVisited = visitedUrls.size();
-        System.out.println("QTD URL: "+visitedUrls.size());
-        visitedUrls.clear();
         List<String> dadosColetados = Collections.synchronizedList(new ArrayList<>());
 
         CountDownLatch latch = new CountDownLatch(processarArquivos.size());
@@ -171,7 +199,7 @@ public class InputDomain implements ValidateDataFormat {
                 SensitiveDataFinder sensitiveDataFinder = new SensitiveDataFinder(arquivoBase);
                 String resultado = sensitiveDataFinder.resultado;
                 sensitiveDataFinder.close();
-                return resultado;
+            return resultado;
             // }
         } catch (Exception e) {
             logError("Erro ao processar o arquivo: " + href, e);
@@ -198,8 +226,10 @@ public class InputDomain implements ValidateDataFormat {
                 byte[] fileBytes = IOUtils.toByteArray(in);
                 Path tempFilePath = Files.createTempFile("tempFile", ValidateDataFormat.extractFileExtension(url));
                 Files.write(tempFilePath, fileBytes);
+                connection.disconnect();
                 return tempFilePath.toFile();
             }
+
         } catch (IOException e) {
             logError("Erro ao baixar o arquivo: " + url, e);
             return null;
@@ -212,7 +242,8 @@ public class InputDomain implements ValidateDataFormat {
         if (indexFragment != -1) {
             url = url.substring(0, indexFragment);
         }
-        indexFragment = url.indexOf("&");
+
+        /*indexFragment = url.indexOf("&");
         if (indexFragment != -1) {
             url = url.substring(0, indexFragment);
         }
@@ -233,7 +264,7 @@ public class InputDomain implements ValidateDataFormat {
         url = url.replaceAll("(tab_files|tab_details|do|ns|image)=[^&]*&?", "");
 
         // Remover & ou ? no final caso fiquem pendentes após a substituição
-        url = url.replaceAll("[&?]$", "");
+        url = url.replaceAll("[&?]$", "");*/
 
         return url;
     }
@@ -243,4 +274,40 @@ public class InputDomain implements ValidateDataFormat {
         System.err.println(message);
         e.printStackTrace();
     }
+
+    public static boolean levenshtein(String str1, String str2) {
+        return calcularSimilaridadeLevenshtein(str1, str2) >= 0.96;
+    }
+
+    public static double calcularSimilaridadeLevenshtein(String str1, String str2) {
+        int distancia = distanciaLevenshtein(str1, str2);
+        int maxLen = Math.max(str1.length(), str2.length());
+        return 1.0 - (double) distancia / maxLen;
+    }
+
+    private static int distanciaLevenshtein(String str1, String str2) {
+        int len1 = str1.length();
+        int len2 = str2.length();
+
+        int[][] dp = new int[len1 + 1][len2 + 1];
+
+        for (int i = 0; i <= len1; i++) {
+            for (int j = 0; j <= len2; j++) {
+                if (i == 0) {
+                    dp[i][j] = j;
+                } else if (j == 0) {
+                    dp[i][j] = i;
+                } else {
+                    int cost = (str1.charAt(i - 1) == str2.charAt(j - 1)) ? 0 : 1;
+                    dp[i][j] = Math.min(
+                            dp[i - 1][j - 1] + cost,
+                            Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1)
+                    );
+                }
+            }
+        }
+
+        return dp[len1][len2];
+    }
+
 }

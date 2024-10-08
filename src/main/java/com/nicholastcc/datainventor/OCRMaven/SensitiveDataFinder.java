@@ -55,6 +55,9 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
 				tess4j = null;
 			}
 		}
+
+		// FINALIZAR O ARQUIVO FECHAR File arquivoBase.arquivo
+		arquivoBase.fileFinalizer();
 	}
 
 	private static String extractTextFromStream(File file) throws IOException {
@@ -80,7 +83,7 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
 					"|" + arquivoBase.extensaoArquivo +
 					"|" + arquivoBase.tipoProcessamento;
 		}catch (Exception e){
-			System.err.println(e);
+			System.err.println(e.getMessage());
 		}
 		return "";
 	}

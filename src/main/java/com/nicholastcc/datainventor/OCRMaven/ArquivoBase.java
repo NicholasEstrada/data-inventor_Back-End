@@ -22,4 +22,19 @@ public class ArquivoBase {
             throw new IllegalArgumentException("O arquivo não possui uma extensão.");
         }
     }
+
+    public boolean fileFinalizer(){
+        if (arquivo != null && arquivo.exists()) {
+            boolean deleted = arquivo.delete();
+            if (deleted) {
+                System.out.println("Arquivo " + arquivo.getName() + " excluído com sucesso.");
+            } else {
+                System.err.println("Falha ao excluir o arquivo " + arquivo.getName());
+            }
+            return deleted;
+        } else {
+            System.err.println("Arquivo não encontrado: " + arquivo.getName());
+            return false;
+        }
+    }
 }
