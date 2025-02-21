@@ -91,10 +91,6 @@ public interface DataInspector extends ValidateDataFormat {
         return result.toString();
     }
 
-    static String ProcuraOpiniaoPolitica(String input){
-        return "";
-    }
-
     static String extractOpiniaoPolitica(String text) {
         ArrayList<String> results = new ArrayList<>();
         StringBuilder resultsFinal = new StringBuilder();
@@ -104,7 +100,7 @@ public interface DataInspector extends ValidateDataFormat {
         Matcher matcher = pattern.matcher(text.toLowerCase());
 
         while (matcher.find()) {
-            results.add("OpiniaoPolitica:" + matcher.group());
+            results.add("Opiniao Politica:" + matcher.group());
         }
 
         for (String dado : results) {
@@ -117,13 +113,13 @@ public interface DataInspector extends ValidateDataFormat {
     static String extractOrigemRacial(String text) {
         ArrayList<String> results = new ArrayList<>();
         StringBuilder resultsFinal = new StringBuilder();
-        String regex = "\\b(?:branco|negro|pardo|asiático|indígena|latino|europeu|africano|árabe|mulato|caucasiano|afrodescendente|afroamericano|indiano|oriental|mestizo|nativo|aborígene|ameríndio|hispânico|moreno|rom|roma)\\b";
+        String regex = "\\b(?:branco|negro|pardo|asiático|indígena|latino|europeu|africano|árabe|mulato|caucasiano|afrodescendente|afroamericano|indiano|oriental|mestizo|nativo|aborígene|ameríndio|hispânico|moreno|roma)\\b";
 
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(text.toLowerCase());
 
         while (matcher.find()) {
-            results.add("OrigemRacial:" + matcher.group());
+            results.add("Origem Racial:" + matcher.group());
         }
 
         for (String dado : results) {
@@ -142,7 +138,7 @@ public interface DataInspector extends ValidateDataFormat {
         Matcher matcher = pattern.matcher(text.toLowerCase());
 
         while (matcher.find()) {
-            results.add("ConviccaoReligiosa:" + matcher.group());
+            results.add("Conviccao Religiosa:" + matcher.group());
         }
 
         for (String dado : results) {
@@ -161,7 +157,7 @@ public interface DataInspector extends ValidateDataFormat {
         Matcher matcher = pattern.matcher(text.toLowerCase());
 
         while (matcher.find()) {
-            results.add("DadoBiometrico:" + matcher.group());
+            results.add("Dado Biometrico:" + matcher.group());
         }
 
         for(String dado : results){
@@ -180,7 +176,7 @@ public interface DataInspector extends ValidateDataFormat {
         Matcher matcher = pattern.matcher(text.toLowerCase());
 
         while (matcher.find()) {
-            results.add("DadoGenetico:" + matcher.group());
+            results.add("Dado Genetico:" + matcher.group());
         }
 
         for (String dado : results) {
@@ -199,7 +195,7 @@ public interface DataInspector extends ValidateDataFormat {
         Matcher matcher = pattern.matcher(text.toLowerCase());
 
         while (matcher.find()) {
-            results.add("DadoSaude:" + matcher.group());
+            results.add("Dado de Saude:" + matcher.group());
         }
 
         for (String dado : results) {
@@ -218,7 +214,7 @@ public interface DataInspector extends ValidateDataFormat {
         Matcher matcher = pattern.matcher(text.toLowerCase());
 
         while (matcher.find()) {
-            results.add("VidaSexual:" + matcher.group());
+            results.add("Vida Sexual:" + matcher.group());
         }
 
         for (String dado : results) {
