@@ -84,7 +84,7 @@ public class InputDomain implements ValidateDataFormat {
 
             visitedUrls.add(currentDomain);
 
-            System.out.println("#######################################################");
+            System.out.println("######################################################");
             System.out.println("visitedUrls.size():" + visitedUrls.size());
             System.out.println("normalizarUrl(currentDomain): " + normalizarUrl(currentDomain));
             System.out.println("currentDomain: " + currentDomain);
