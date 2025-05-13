@@ -130,7 +130,7 @@ src/
 
 ## 📸 Demonstração
 
-> Inclua aqui capturas de tela da aplicação funcionando ou um GIF curto com a navegação.
+![output](https://github.com/user-attachments/assets/111bc88d-0963-447c-ba25-ad64d8f4833c)
 
 ---
 
