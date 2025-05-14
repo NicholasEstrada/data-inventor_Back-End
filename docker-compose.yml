@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  data-inventor_front-end:
+    build:
+      context: ./data-inventor_Front-End
+    ports:
+      - "4200:80"
+    depends_on:
+      - data-inventor_back-end
+
+  data-inventor_back-end:
+    build:
+      context: ./data-inventor_Back-End
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/data_inventor
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: data_inventor
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
