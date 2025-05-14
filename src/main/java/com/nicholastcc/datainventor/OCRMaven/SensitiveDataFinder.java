@@ -39,7 +39,8 @@ public class SensitiveDataFinder implements Closeable, DataInspector {
 		if ( arquivoBase.tipoProcessamento.equals("OCR") ) {
 			Tesseract tess4j = new Tesseract();
 			// tess path location ATUALIZAR EM CASO DE TROCA DE AREA DE DESENVOLVIMENTO
-			tess4j.setDatapath("C:\\Users\\Nicholas\\Dev\\TCC\\Back-End\\data-inventor\\tessdata");
+			File tessDataFolder = new File("tessdata");
+			tess4j.setDatapath(tessDataFolder.getAbsolutePath());
 			tess4j.setTessVariable("user_defined_dpi", "96");
 			tess4j.setTessVariable("debug_file", "/dev/null");
 			try {
