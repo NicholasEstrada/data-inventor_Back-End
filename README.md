@@ -28,32 +28,45 @@ O **Data-Inventor** é uma ferramenta automatizada
 
 Este README apresenta a documentação da ferramenta Data-Inventor, estruturado com informações sobre:
 
-1.  **Título e Resumo:** Título do projeto e um resumo conciso (cópia do resumo do artigo).
-2.  **Funcionalidades:** Lista as principais funcionalidades da ferramenta.
-3.  **Dependências:** Lista os requisitos de software (Python, APIs).
-4.  **Preocupações com segurança:** Lista das preocupações com a segurança.
-5.  **Instalação:** Instruções passo a passo para instalar a ferramenta.
-6.  **Docker (Opcional):** Instruções para construir e executar a ferramenta usando Docker.
-7.  **Configuração:** Instruções para configurar as chaves de API.
-8.  **Uso:** Descreve como reproduzir os experimentos apresentados no artigo..
-9.  **Experimentos:** Explicação dos argumentos de linha de comando e exemplos de uso.
-10. **Estrutura do Código:** Breve visão geral da organização do código-fonte.
-11. **Extensibilidade**: Como adicionar novas fontes e novos exportadores.
-12. **Licença:** Informações sobre a licença do projeto.
+1. [Selos Considerados](#selos-considerados) - Critérios de avaliação do projeto
+2. [Informações Básicas](#informações-básicas) - Requisitos de hardware e software
+3. [Dependências](#dependências) - Componentes e bibliotecas necessárias
+4. [Preocupações com Segurança](#preocupações-com-segurança) - Considerações sobre segurança
+5. [Instalação](#instalação) - Processo de configuração e execução
+6. [Teste Mínimo](#teste-mínimo) - REVER Validação básica do funcionamento
+7. **Experimentos** - Reivindicações e procedimentos de teste
+8. **Licença** - Termos de uso do software
+9. **Contato** - Informações dos desenvolvedores
 
-- Objetivo do projeto e resumo
-- Organização do repositório
-- Selos considerados para avaliação
-- Ambiente de execução
-- Dependências
-- Segurança
-- Instruções de instalação e teste mínimo
-- Reproduzibilidade dos experimentos
-- Licença e contato
+
+## Selos Considerados
+
+Os selos considerados para este projeto são:
+- **Disponível**: O artefato está publicamente acessível
+- **Funcional**: Todas as funcionalidades descritas estão operacionais
+- **Reproduzível**: Os experimentos podem ser replicados com os dados fornecidos
+
+## Informações Básicas
+
+### Ambiente de Execução Recomendado:
+- **Sistema Operacional**: Ubuntu 22.04 LTS ou Windows 10+
+- **Hardware Mínimo**:
+  - Processador: 2 núcleos (x86_64)
+  - Memória RAM: 4GB
+  - Armazenamento: 10GB (SSD recomendado)
+  - Conexão de internet estável
+
+### Requisitos de Software:
+- Java JDK 20+
+- Node.js 18+
+- PostgreSQL 13+
+- Tesseract OCR 5.0+
+- Docker (opcional para execução em containers)
 
 ---
-### Dependências principais:
+## Dependências
 
+### Backend (Java/Spring Boot):
 - Java 20
 - Spring Boot 3.2.2
 - Spring Security + JWT
@@ -63,6 +76,7 @@ Este README apresenta a documentação da ferramenta Data-Inventor, estruturado 
 - Apache PDFBox
 - Jsoup (HTML parsing)
 - Commons Text (Levenshtein distance)
+### Frontend (Angular):
 - Node.js 18+
 - npm 9+
 - Angular CLI 16+
@@ -78,28 +92,18 @@ A ferramenta não apresenta riscos diretos ao avaliador. No entanto:
 - É importante garantir que os arquivos analisados não contenham códigos maliciosos.
 - Evitar executar a aplicação com permissões elevadas.
 ---
-## Instalação e Execução
+## Instalação
 
-### 1. Pré-requisitos
+## Back-end Spring Boot
 
-- **Sistema Operacional Recomendado:** Ubuntu 22.04 ou Windows 10+
-- **Java:** 20+
-- **Maven:** 3.8+
-- **Banco de Dados:** PostgreSQL 13+
-- **OCR:** Tesseract 5.0+
-- **Hardware mínimo:**  
-  - 2 vCPUs  
-  - 4GB RAM  
-  - 2GB espaço em disco
-
-### 2. Clonar o projeto
+### 1. Clonar o projeto
 
 ```bash
 git clone https://github.com/NicholasEstrada/data-inventor_Back-End.git
 cd data-inventor_Back-End
 ```
 
-### 3. Configurar o banco de dados
+### 2. Configurar o banco de dados
 
 Abra o PostgreSQL e crie o banco:
 
@@ -117,7 +121,7 @@ spring.datasource.password=postgres
 
 ---
 
-### 5. Executar o projeto
+### 3. Executar o projeto
 
 ```bash
 ./mvnw spring-boot:run
@@ -128,11 +132,9 @@ A API estará disponível em:
 
 ---
 
-## 🖥️ Front-end Angular
+###  Front-end Angular
 
 O projeto Angular foi desenvolvido para consumir essa API. Você pode encontrá-lo [aqui](https://github.com/NicholasEstrada/data-inventor_Front-End).
-
-## Comandos úteis no para instalar o projeto:
 
 ### 1. Clonar o projeto
 ```bash
@@ -186,31 +188,66 @@ docker compose -f docker-compose.yml up -d --build
 
 ---
 
-# ✅ Teste Mínimo
+# Teste Mínimo
 
-1. Com o servidor ativo em `http://localhost:8080`, autentique-se via JWT.
-2. Use a interface Angular ou Postman para enviar um domínio que contenha arquivos PDF públicos.
-3. Verifique os resultados retornados em `/dados-sensiveis?dominio=example.com`.
+1. **Criando usuário:** Com o servidor ativo em `http://localhost:8080`, e a aplicação do Front End no endereço `http://localhost:4200`. Crie um usuário acessando a tela de cadastro, disponível no botão `Não possui usuário? Cadastre-se` ao abrir o endereço do Front End e aplique as informações para cadastro ou faça via CMD o CURL abaixo
+```
+curl -X POST http://localhost:8080/auth/register \
+-H "Content-Type: application/json" \
+-d '{"username": "nomeUsuario", "password": "12345678"}'
+```
+2. **Login:** Ao criar as credenciais autentique inserindo as informações registradas na tela de login. Se for usar a aplicação via terminal, guarde a resposta utilizar nas próximas requisições, exemplo: `{"token":"eyJhbGciOiJIUz...3VhcmlvIiwiZXhwI"}` e substitua nas linhas `-H "Authorization: Bearer AQUI`.
+
+```
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "nomeUsuario", "password": "12345678", "grant_type": "password"}'
+``` 
+
+
+3. **Realizando Busca:** Ao acessar a tela do home, navegue na aba lateral acessando a opção `Dominio` logo após acesse o botão `+Novo`, inclua uma url qual deseja processar e inicie clicando em `Vasculhar`. Recomendação de link: [manualdoservidor.ifc.edu.br/programa-de-gestao-e-desempenho-modalidade-teletrabalho/](manualdoservidor.ifc.edu.br/programa-de-gestao-e-desempenho-modalidade-teletrabalho/)
+
+```
+curl -v -X POST http://localhost:8080/inventor/buscaPorDominio \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer SEU_TOKEN_JWT_AQUI" \
+  -d '{"dominio":"manualdoservidor.ifc.edu.br/programa-de-gestao-e-desempenho-modalidade-teletrabalho/"}'
+
+```
+
+
+4. Verifique os resultados retornados da busca acessando na aba lateral na opção `Dados Sensíveis Processados` e selecione o link que deseja verificar o resultado da busca e clique em `Consultar`. Isso ira mostrar os resultados de forma paginada de cada
+
+```
+curl -X GET http://localhost:8080/inventor/dominios \
+  -H "Authorization: Bearer SEU_TOKEN_JWT_AQUI"
+```
+5. Se utilizar via terminal ao receber os resultados verifique o `id` que queira os resultados e aplique na URL de busca em `APLIQUE_AQUI_O_ID`, nesta consulta é possível filtrar a quantidade de arquivos encontrados indicando o `page=` e `size=`, respectivamente numero da página e tamanho da página.
+```
+curl -X GET "http://localhost:8080/inventor/dadosSensiveisDomain?dominioId=APLIQUE_AQUI_O_ID&page=0&size=100" \
+  -H "Authorization: Bearer SEU_TOKEN_JWT_AQUI"
+
+```
 
 Resultado esperado:  
 → JSON contendo URLs de arquivos analisados e os dados sensíveis encontrados.
 
 ---
 
-# 🧪 Experimentos
+#  Experimentos
 
 ### Reivindicação #1: Identificação de Dados Sensíveis em PDF
 
-**Objetivo:** Demonstrar a capacidade do sistema em detectar CPFs, RGs, datas e nomes completos em arquivos PDF públicos.
+**Objetivo:** Demonstrar a capacidade do sistema em detectar CPFs, emails, dados sensíveis em arquivos PDF de sítios web públicos.
 
 **Procedimento:**
 
 1. Configure o sistema como descrito.
 2. Utilize o domínio de teste `http://www.exemplo.com.br/documentos`.
-3. Execute a análise via POST em `/crawler/dominio`.
-4. Consulte os dados extraídos via `/dados-sensiveis`.
+3. Execute a análise via POST em `/inventor/buscaPorDominio`.
+4. Consulte os dados extraídos via `/inventor/dadosSensiveisDomain`.
 
-**Recurso esperado:** 1 GB RAM, 500 MB Disco  
+**Recurso esperado:** 4 GB RAM, 500 MB Disco  
 **Resultado:** JSON com campos classificados e trechos de texto contendo os dados sensíveis.
 
 ---
