@@ -33,8 +33,8 @@ Este README apresenta a documentação da ferramenta Data-Inventor, estruturado 
 3. [Dependências](#dependências) - Componentes e bibliotecas necessárias
 4. [Preocupações com Segurança](#preocupações-com-segurança) - Considerações sobre segurança
 5. [Instalação](#instalação) - Processo de configuração e execução
-6. [Teste Mínimo](#teste-mínimo) - REVER Validação básica do funcionamento
-7. **Experimentos** - Reivindicações e procedimentos de teste
+6. [Teste Mínimo](#teste-mínimo) - Validação básica do funcionamento
+7. [Experimentos](#experimentos) - Reivindicações e procedimentos de teste
 8. **Licença** - Termos de uso do software
 9. **Contato** - Informações dos desenvolvedores
 
@@ -236,35 +236,77 @@ Resultado esperado:
 
 #  Experimentos
 
-### Reivindicação #1: Identificação de Dados Sensíveis em PDF
+## Reivindicação #1: Identificação de Dados Sensíveis
 
-**Objetivo:** Demonstrar a capacidade do sistema em detectar CPFs, emails, dados sensíveis em arquivos PDF de sítios web públicos.
+**Objetivo:** Demonstrar a capacidade do sistema em detectar dados sensíveis em arquivos em sítios web públicos.
 
 **Procedimento:**
 
 1. Configure o sistema como descrito.
-2. Utilize o domínio de teste `http://www.exemplo.com.br/documentos`.
-3. Execute a análise via POST em `/inventor/buscaPorDominio`.
-4. Consulte os dados extraídos via `/inventor/dadosSensiveisDomain`.
+2. Utilize o domínio `https://udesc.br/`.
+3. Execute a análise via POST em `/inventor/buscaPorDominio` ou na interface da aplicação.
+4. Aguarde a analise, este dominio tem um tempo de 30~50 minutos de demora por conta de sua dimenção.
+5. Consulte os dados extraídos via `/inventor/dadosSensiveisDomain` ou na interface da aplicação.
 
 **Recurso esperado:** 4 GB RAM, 500 MB Disco  
 **Resultado:** JSON com campos classificados e trechos de texto contendo os dados sensíveis.
 
+### Amostragem dos Resultados
+
+Os resultados com base realizado no dia 08/10/2024 no sitio web `https://udesc.br/` foram os seguintes:
+
+| Métrica                                      | Valor |
+| -------------------------------------------- | ----- |
+| Páginas visitadas                            | 103   |
+| Arquivos com dados sensíveis                 | 864   |
+| Dados sensíveis identificados                | 2.866 |
+| PDFs processados (OCR)                       | 23    |
+| PDFs editáveis processados                   | 2.842 |
+| CPFs encontrados                             | 17    |
+| E-mails encontrados                          | 2.249 |
+| Outros dados sensíveis (religião, política…) | 576   |
+
+#### E-mails
+Total de e-mails encontrados: 2.249
+
+- Potencialmente expostos sem consentimento: 9 (que não faziam parte do dominio `@udesc.br`)
+- Localizados em URLs específicas do domínio, úteis para auditoria e ações corretivas.
+
+#### CPFs
+Total de CPFs encontrados: 17
+
+- CPFs únicos: 9
+- Alguns registros estavam duplicados em diferentes arquivos.
+
+#### Outros Dados Sensiveis
+
+| Categoria                    | Ocorrências |
+| ---------------------------- | ----------- |
+| Convicção religiosa          | 129         |
+| Origem racial (ex: "branco") | 137         |
+| Origem racial (ex: "negro")  | 201         |
+| Dados biométricos            | 15          |
+| Dados de saúde               | 8           |
+| Dados genéticos              | 1           |
+| Opinião política             | 29          |
+
+
 ---
 
-### Reivindicação #2: Análise de Arquivos com OCR
+## Reivindicação #2: Análise de Arquivos com OCR
 
 **Objetivo:** Avaliar a capacidade do OCR de extrair dados sensíveis de PDFs escaneados.
 
 **Procedimento:**
 
-1. Insira na pasta de teste um PDF escaneado (imagem).
-2. Aponte o domínio para o recurso simulado.
-3. Execute a análise.
-4. Verifique se os dados foram extraídos corretamente.
+1. Configure o sistema como descrito.
+2. Utilize um link para um PDF de imagem como exemplo: `https://ifc.edu.br/wp-content/uploads/2023/03/quabro_horario_servidor.pdf`.
+3. Execute a análise via POST em `/inventor/buscaPorDominio` ou na interface da aplicação.
+4. Aguarde a analise, por se tratar de um arquivo o resultado é praticamente instantâneo.
+5. Consulte os dados extraídos via `/inventor/dadosSensiveisDomain`.
 
 **Resultado Esperado:**  
-→ Extração precisa de dados após aplicação do Tesseract, mesmo em documentos com baixa resolução.
+→ Extração de dados mesmo ele sendo imagem, aplicação do Tesseract.
 
 
 ## 📸 Demonstração
