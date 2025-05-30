@@ -45,6 +45,9 @@ Os selos considerados para este projeto são:
 - **Disponível**: O artefato está publicamente acessível
 - **Funcional**: Todas as funcionalidades descritas estão operacionais
 - **Reproduzível**: Os experimentos podem ser replicados com os dados fornecidos
+- **Sustentável**: O projeto adota práticas de eficiência computacional e incentiva o uso consciente de recursos. Foi projetado com:
+  - Uso de containers Docker para reutilização e portabilidade
+  - Apoio à auditoria digital, reduzindo o uso de papel em processos de conformidade com a LGPD
 
 ## Informações Básicas
 
