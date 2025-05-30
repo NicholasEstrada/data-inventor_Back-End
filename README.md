@@ -7,6 +7,12 @@
 
 ---
 
+### Origem do Nome do Projeto
+
+O nome _Data Inventor_ vem do latim _inventor_, que significa “aquele que descobre”. Ele representa o propósito essencial da ferramenta: descobrir dados sensíveis em arquivos dentro de um sítio web, atuando como um mecanismo de busca para identificação de riscos e exposição de informações críticas.
+
+---
+
 **Resumo do Artigo:**
 
 O **Data-Inventor** é uma ferramenta automatizada
