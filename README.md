@@ -15,7 +15,7 @@ O nome _Data Inventor_ vem do latim _inventor_, que significa “aquele que desc
 
 **Resumo do Artigo:**
 
-A necessidade de proteger os dados pessoais é crucial não apenas para preservar a privacidade e a dignidade dos indivíduos, mas também para evitar discriminação e abuso. Buscando proteger os dados pessoais no Brasil a LGPD foi sancionada, porém, garantir que os dados publicados estejam em conformidade com a lei é uma atividade que apresenta dificuldades. Visando contrituir para o atendimento desta conformidade por parte das empresas e instituições foi desenvolvida uma ferramenta que auxilia na verificação da existência de dados sensíveis públicos em sitios web.
+A necessidade de proteger os dados pessoais é crucial não apenas para preservar a privacidade e a dignidade dos indivíduos, mas também para evitar discriminação e abuso. Buscando proteger os dados pessoais no Brasil a LGPD foi sancionada, porém, garantir que os dados publicados estejam em conformidade com a lei é uma atividade que apresenta dificuldades. Visando contrituir para o atendimento desta conformidade por parte das empresas e instituições foi desenvolvida uma ferramenta que auxilia na verificação da existência de dados sensíveis públicos em websites.
 
 ---
 
@@ -335,8 +335,9 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ---
 
 ## 📬 Contato
-
+O autor correspondente 
+<!-- 
 Em caso de dúvidas ou sugestões:
-
 - nicholas26cervatti@gmail.com
 - [LinkedIn](https://www.linkedin.com/in/nicholas-estrada-909242174/)
+-->
