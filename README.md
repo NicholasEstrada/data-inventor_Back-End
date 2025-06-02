@@ -15,18 +15,14 @@ O nome _Data Inventor_ vem do latim _inventor_, que significa “aquele que desc
 
 **Resumo do Artigo:**
 
-O **Data-Inventor** é uma ferramenta automatizada
- para identificação de dados sensíveis em arquivos PDF publicados em sítios web, visando
- a conformidade com a **Lei Geral de Proteção de Dados (LGPD)**. A ferramenta consiste em
- um crawler que varre URLs em busca de arquivos PDF, analisando seu conteúdo por meio
- de processamento de texto e OCR (Reconhecimento Óptico de Caracteres), para identificar
- informações sensíveis como CPF, e-mail, dados de saúde, entre outros. A arquitetura
- da ferramenta é composta de módulos de coleta, análise e armazenamento, com uma
- interface de usuário. Testes realizados no sítio web da UDESC comprovaram a eficácia
- da ferramenta, com a identificação de diversos dados sensíveis em um tempo menor do
- que o processo manual. O trabalho discute os desafios da busca manual, a arquitetura da
- ferramenta, os resultados obtidos e a importância de soluções automatizadas para garantir
- a conformidade com a LGPD.
+A necessidade de proteger os dados pessoais ´e crucial n˜ao apenas
+para preservar a privacidade e a dignidade dos indiv´ıduos, mas tamb´em para
+evitar discriminac¸ ˜ao e abuso. Buscando proteger os dados pessoais no Bra-
+sil a LGPD foi sancionada, por´em, garantir que os dados publicados estejam
+em conformidade com a lei ´e uma atividade que apresenta dificuldades. Vi-
+sando contrituir para o atendimento desta conformidade por parte das empresa
+e instituic¸ ˜oes foi desenvolvida uma ferramenta que auxilia na verificac¸ ˜ao da
+existˆencia de dados sens´ıveis p´ublicos em sitios web.
 
 ---
 
@@ -101,7 +97,12 @@ A ferramenta não apresenta riscos diretos ao avaliador. No entanto:
 - É importante garantir que os arquivos analisados não contenham códigos maliciosos.
 - Evitar executar a aplicação com permissões elevadas.
 ---
-## Instalação
+# Instalação
+Este projeto pode ser executado de duas formas:
+
+- Instalação Manual – ideal para desenvolvimento ou aprendizado.
+
+- [Estrutura do Projeto com Docker Compose](#Estrutura-do-Projeto-com-Docker-Compose) – recomendada para subir rapidamente toda a aplicação com seus serviços.
 
 ## Back-end Spring Boot
 
@@ -141,7 +142,7 @@ A API estará disponível em:
 
 ---
 
-###  Front-end Angular
+##  Front-end Angular
 
 O projeto Angular foi desenvolvido para consumir essa API. Você pode encontrá-lo [aqui](https://github.com/NicholasEstrada/data-inventor_Front-End).
 
