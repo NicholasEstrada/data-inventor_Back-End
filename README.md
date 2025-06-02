@@ -15,14 +15,7 @@ O nome _Data Inventor_ vem do latim _inventor_, que significa “aquele que desc
 
 **Resumo do Artigo:**
 
-A necessidade de proteger os dados pessoais ´e crucial n˜ao apenas
-para preservar a privacidade e a dignidade dos indiv´ıduos, mas tamb´em para
-evitar discriminac¸ ˜ao e abuso. Buscando proteger os dados pessoais no Bra-
-sil a LGPD foi sancionada, por´em, garantir que os dados publicados estejam
-em conformidade com a lei ´e uma atividade que apresenta dificuldades. Vi-
-sando contrituir para o atendimento desta conformidade por parte das empresa
-e instituic¸ ˜oes foi desenvolvida uma ferramenta que auxilia na verificac¸ ˜ao da
-existˆencia de dados sens´ıveis p´ublicos em sitios web.
+A necessidade de proteger os dados pessoais é crucial não apenas para preservar a privacidade e a dignidade dos indivíduos, mas também para evitar discriminação e abuso. Buscando proteger os dados pessoais no Brasil a LGPD foi sancionada, porém, garantir que os dados publicados estejam em conformidade com a lei é uma atividade que apresenta dificuldades. Visando contrituir para o atendimento desta conformidade por parte das empresas e instituições foi desenvolvida uma ferramenta que auxilia na verificação da existência de dados sensíveis públicos em sitios web.
 
 ---
 
@@ -100,8 +93,8 @@ A ferramenta não apresenta riscos diretos ao avaliador. No entanto:
 # Instalação
 Este projeto pode ser executado de duas formas:
 
-- Instalação Manual – ideal para desenvolvimento ou aprendizado.
-
+- Instalação Manual – ideal para desenvolvimento, testes ou aprendizado.
+Os passos descritos a seguir explicam como configurar e executar o projeto manualmente, tanto o back-end quanto o front-end.
 - [Estrutura do Projeto com Docker Compose](#Estrutura-do-Projeto-com-Docker-Compose) – recomendada para subir rapidamente toda a aplicação com seus serviços.
 
 ## Back-end Spring Boot
