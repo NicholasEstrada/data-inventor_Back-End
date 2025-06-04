@@ -111,7 +111,7 @@ cd data-inventor_Back-End
 Abra o PostgreSQL e crie o banco:
 
 ```sql
-CREATE DATABASE data_inventor;
+CREATE DATABASE data-inventor;
 ```
 
 **Configure o usuário e senha no arquivo `application.properties`:**
